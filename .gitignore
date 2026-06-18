@@ -5,3 +5,5 @@ docs/notas-apresentacao.md
 __pycache__/
 *.pyc
 .pytest_cache/
+.coverage
+.cache/
