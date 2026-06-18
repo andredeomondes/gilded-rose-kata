@@ -9,6 +9,7 @@ from src.domain.item_updaters import (
     AgedBrieUpdater,
     SulfurasUpdater,
     BackstagePassesUpdater,
+    ConjuredItemUpdater,
     resolve_updater,
 )
 from src.domain.item_names import AGED_BRIE, SULFURAS, BACKSTAGE_PASSES
@@ -48,4 +49,17 @@ def test_resolve_updater_retorna_estrategia_correta_por_nome():
     assert isinstance(resolve_updater(AGED_BRIE), AgedBrieUpdater)
     assert isinstance(resolve_updater(SULFURAS), SulfurasUpdater)
     assert isinstance(resolve_updater(BACKSTAGE_PASSES), BackstagePassesUpdater)
+    assert isinstance(resolve_updater("Conjured Mana Cake"), ConjuredItemUpdater)
     assert isinstance(resolve_updater("item qualquer"), NormalItemUpdater)
+
+
+def test_conjured_updater_degrada_2x_mais_rapido():
+    item = Item("Conjured Mana Cake", sell_in=10, quality=20)
+    ConjuredItemUpdater().update(item)
+    assert (item.sell_in, item.quality) == (9, 18)
+
+
+def test_conjured_updater_degrada_4_por_dia_apos_vencimento():
+    item = Item("Conjured Mana Cake", sell_in=0, quality=20)
+    ConjuredItemUpdater().update(item)
+    assert item.quality == 16
