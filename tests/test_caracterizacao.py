@@ -82,10 +82,18 @@ class TestBackstagePasses:
         assert item.quality == 50
 
 
-class TestComportamentoAtualConjured:
-    """Bug conhecido (docs/diagnostico_tecnico.md item 7): ainda nao
-    implementado nesta branch. Substituido pelo comportamento correto
-    na branch feat/conjured."""
-    def test_hoje_degrada_como_item_comum_1_por_dia(self):
+class TestConjured:
+    """Regra implementada na branch feat/conjured (RF11, docs/requisitos.md):
+    degrada 2x mais rapido que item comum. Bug do legado (1/dia) corrigido."""
+
+    def test_perde_2_de_quality_por_dia_antes_do_vencimento(self):
         item = update("Conjured Mana Cake", sell_in=10, quality=20)
-        assert item.quality == 19
+        assert item.quality == 18
+
+    def test_perde_4_de_quality_por_dia_apos_vencimento(self):
+        item = update("Conjured Mana Cake", sell_in=0, quality=20)
+        assert item.quality == 16
+
+    def test_quality_nunca_fica_negativa(self):
+        item = update("Conjured Mana Cake", sell_in=0, quality=2)
+        assert item.quality == 0

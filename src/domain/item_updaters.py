@@ -4,7 +4,7 @@ item. Substitui o metodo monolitico update_quality (ver
 docs/diagnostico_tecnico.md) por classes pequenas, cada uma testavel
 isoladamente (RNF04/RNF05/RNF06 em docs/requisitos.md).
 """
-from src.domain.item_names import AGED_BRIE, SULFURAS, BACKSTAGE_PASSES
+from src.domain.item_names import AGED_BRIE, SULFURAS, BACKSTAGE_PASSES, is_conjured
 
 MIN_QUALITY = 0
 MAX_QUALITY = 50
@@ -48,6 +48,14 @@ class BackstagePassesUpdater(ItemUpdater):
             item.quality = 0
 
 
+class ConjuredItemUpdater(ItemUpdater):
+    def update(self, item):
+        item.quality = max(MIN_QUALITY, item.quality - 2)
+        item.sell_in -= 1
+        if item.sell_in < 0:
+            item.quality = max(MIN_QUALITY, item.quality - 2)
+
+
 _UPDATERS_BY_NAME = {
     AGED_BRIE: AgedBrieUpdater(),
     SULFURAS: SulfurasUpdater(),
@@ -58,4 +66,6 @@ _DEFAULT_UPDATER = NormalItemUpdater()
 
 
 def resolve_updater(item_name):
+    if is_conjured(item_name):
+        return ConjuredItemUpdater()
     return _UPDATERS_BY_NAME.get(item_name, _DEFAULT_UPDATER)
