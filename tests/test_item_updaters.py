@@ -4,13 +4,13 @@ Prova o atendimento ao RNF04 (docs/requisitos.md): cada regra pode ser
 testada isoladamente.
 """
 from src.domain.item import Item
-from src.domain.item_updaters import (
+from src.domain.updaters import (
     NormalItemUpdater,
     AgedBrieUpdater,
     SulfurasUpdater,
     BackstagePassesUpdater,
     ConjuredItemUpdater,
-    resolve_updater,
+    build_default_registry,
 )
 from src.domain.item_names import AGED_BRIE, SULFURAS, BACKSTAGE_PASSES
 
@@ -45,12 +45,13 @@ def test_backstage_updater_zera_apos_show():
     assert item.quality == 0
 
 
-def test_resolve_updater_retorna_estrategia_correta_por_nome():
-    assert isinstance(resolve_updater(AGED_BRIE), AgedBrieUpdater)
-    assert isinstance(resolve_updater(SULFURAS), SulfurasUpdater)
-    assert isinstance(resolve_updater(BACKSTAGE_PASSES), BackstagePassesUpdater)
-    assert isinstance(resolve_updater("Conjured Mana Cake"), ConjuredItemUpdater)
-    assert isinstance(resolve_updater("item qualquer"), NormalItemUpdater)
+def test_registry_resolve_retorna_estrategia_correta_por_nome():
+    registry = build_default_registry()
+    assert isinstance(registry.resolve(AGED_BRIE), AgedBrieUpdater)
+    assert isinstance(registry.resolve(SULFURAS), SulfurasUpdater)
+    assert isinstance(registry.resolve(BACKSTAGE_PASSES), BackstagePassesUpdater)
+    assert isinstance(registry.resolve("Conjured Mana Cake"), ConjuredItemUpdater)
+    assert isinstance(registry.resolve("item qualquer"), NormalItemUpdater)
 
 
 def test_conjured_updater_degrada_2x_mais_rapido():
