@@ -1,4 +1,4 @@
-# Diagnóstico Técnico — Código Legado
+# Diagnóstico Técnico do Código Legado
 
 Este documento apresenta a análise técnica realizada sobre o método `update_quality`, localizado no arquivo `legacy/gilded_rose.py` (linhas 8 a 36), responsável por toda a regra de atualização diária dos itens do estoque no sistema original.
 
@@ -28,7 +28,7 @@ Os limites de qualidade (mínimo 0 e máximo 50) não estão centralizados em ne
 
 Não é possível testar isoladamente a regra de um único tipo de item, como o Aged Brie, por exemplo. Para validar qualquer regra é necessário instanciar a classe `GildedRose` com uma lista completa de itens e executar o método `update_quality` por inteiro. Essa limitação foi confirmada na execução da suíte de testes original, registrada no arquivo `docs/evidencias/testes_legado_antes.txt`: a cobertura real de regras de negócio é de 0%, pois um dos testes existentes é apenas um exemplo de modelo (não testa nenhuma regra real) e o outro é um teste de ponta a ponta, não unitário.
 
-### 7. Regra de negócio incompleta — bug confirmado
+### 7. Regra de negócio incompleta: bug confirmado
 
 O cenário de demonstração do sistema, definido em `legacy/texttest_fixture.py`, já inclui um item chamado "Conjured Mana Cake". No entanto, o método `update_quality` não possui nenhuma regra específica para esse tipo de item, o que faz com que ele seja tratado como um item comum: perde 1 ponto de qualidade por dia antes do vencimento e 2 pontos por dia após o vencimento. De acordo com a especificação do problema, um item Conjurado deveria perder qualidade duas vezes mais rápido que um item comum (2 pontos por dia antes do vencimento e 4 pontos por dia após o vencimento). Esse comportamento incorreto foi confirmado na execução registrada em `docs/evidencias/execucao_legado_antes.txt`, onde se observa que o item "Conjured Mana Cake" perde exatamente 1 ponto de qualidade por dia. Trata-se da lacuna que o Passo 8 do trabalho solicita corrigir.
 
@@ -40,8 +40,8 @@ A ausência de testes unitários por tipo de item obriga a equipe a validar qual
 
 Por fim, a duplicação de nomes de itens e de limites de qualidade cria múltiplos pontos onde uma mesma correção precisa ser replicada. Corrigir uma regra em um desses pontos e esquecer o equivalente em outro é um erro fácil de cometer e difícil de detectar sem uma rede de testes automatizados.
 
-## Ressalvas — o que não deve ser considerado problema
+## Ressalvas: o que não deve ser considerado problema
 
-É importante não exagerar o diagnóstico. O método analisado é relativamente curto, com cerca de trinta linhas — o problema identificado é de natureza estrutural (acoplamento excessivo, duplicação de conhecimento e identificação de tipo por comparação de texto), e não está relacionado ao volume de código.
+É importante não exagerar o diagnóstico. O método analisado é relativamente curto, com cerca de trinta linhas. O problema identificado é de natureza estrutural, relacionado ao acoplamento excessivo, à duplicação de conhecimento e à identificação de tipo por comparação de texto, e não está relacionado ao volume de código.
 
 Além disso, apesar de difícil leitura, a lógica do código legado está correta para todos os itens já previstos na especificação original. Essa correção foi confirmada por execução direta do sistema, registrada em `docs/evidencias/execucao_legado_antes.txt`. A única regra de negócio ausente, de fato, é a do item Conjurado.

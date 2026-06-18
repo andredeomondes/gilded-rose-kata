@@ -18,7 +18,7 @@ As regras de negócio vigentes foram extraídas da especificação oficial do pr
 Embora o sistema funcione corretamente para os itens já existentes, toda a sua lógica de negócio está concentrada em um único método, organizado por meio de condicionais aninhados e identificação de tipo de item por comparação direta de texto. Essa estrutura traz três dificuldades principais:
 
 1. Adicionar uma nova categoria de item, como o Conjurado, exige revisar manualmente todo o método em busca de pontos que possam ser afetados pela mudança.
-2. Não é possível escrever um teste automatizado que valide isoladamente a regra de um único tipo de item — a única forma de testar qualquer regra é executar a simulação completa do sistema.
+2. Não é possível escrever um teste automatizado que valide isoladamente a regra de um único tipo de item, pois a única forma de testar qualquer regra é executar a simulação completa do sistema.
 3. Ao alterar uma regra específica, não há garantia de que regras de outros itens, sem relação alguma com a mudança, não tenham sido afetadas por engano.
 
 ## Restrições obrigatórias do trabalho
