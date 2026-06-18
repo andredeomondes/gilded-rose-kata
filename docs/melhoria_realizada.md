@@ -1,43 +1,43 @@
 # Melhoria Realizada
 
-Descrição das alterações feitas no sistema Gilded Rose e justificativa técnica de cada uma, em complemento ao diagnóstico (`docs/diagnostico_tecnico.md`) e ao plano de contingência (`docs/plano_contingencia.md`).
+Este documento descreve as alterações realizadas no sistema Gilded Rose e a justificativa técnica de cada uma, em complemento ao Diagnóstico Técnico (`docs/diagnostico_tecnico.md`) e ao Plano de Contingência (`docs/plano_contingencia.md`).
 
-## 1. Extração de `Item` e `GildedRose` para `src/`, sem alterar lógica
+## 1. Extração da classe `Item` e da classe `GildedRose` para a nova estrutura de pastas
 
-**O que foi feito**: código movido de `legacy/gilded_rose.py` para `src/domain/item.py` (classe `Item`, inalterada) e `src/application/gilded_rose.py` (classe `GildedRose`, lógica idêntica ao original neste primeiro passo).
+O código foi movido do arquivo `legacy/gilded_rose.py` para os arquivos `src/domain/item.py`, contendo a classe `Item` sem qualquer alteração, e `src/application/gilded_rose.py`, contendo a classe `GildedRose` com a lógica ainda idêntica à original nesta primeira etapa.
 
-**Por quê**: estabelecer a estrutura de pastas da arquitetura limpa antes de qualquer mudança de comportamento, permitindo confirmar — com os testes de caracterização — que a simples mudança de local não alterou nada.
+Essa primeira movimentação teve como objetivo estabelecer a estrutura de pastas da arquitetura limpa antes de qualquer alteração de comportamento, permitindo confirmar, por meio dos testes de caracterização, que a simples mudança de localização do código não alterou o seu funcionamento.
 
-## 2. Substituição dos condicionais aninhados por Strategy (`src/domain/item_updaters.py`)
+## 2. Substituição dos condicionais aninhados por estratégias específicas
 
-**O que foi feito**: cada tipo de item (comum, Aged Brie, Sulfuras, Backstage Passes) passou a ter sua própria classe `*Updater` com um único método `update(item)`. `GildedRose.update_quality` foi reduzido a um laço que resolve a estratégia certa por nome (`resolve_updater`) e delega.
+Cada tipo de item — comum, Aged Brie, Sulfuras e Backstage Passes — passou a ter sua própria classe de atualização, com um único método responsável por aplicar a regra correspondente. A classe `GildedRose` foi simplificada para apenas identificar o tipo de cada item e delegar a atualização à classe responsável.
 
-**Por quê**: resolve diretamente os code smells 1, 2, 3 e 4 do diagnóstico técnico (condicionais aninhados, comparação de string repetida, responsabilidades misturadas, regra de Backstage acoplada à regra de Aged Brie). Cada regra agora pode ser lida, entendida e testada isoladamente, sem precisar instanciar o sistema inteiro.
+Essa mudança resolve diretamente os problemas identificados no Diagnóstico Técnico relacionados a condicionais aninhados, duplicação de comparação de texto, mistura de responsabilidades e acoplamento indevido entre regras distintas. Cada regra de negócio passou a poder ser lida, compreendida e testada de forma isolada, sem necessidade de instanciar o sistema completo.
 
-## 3. Centralização dos limites de quality (`MIN_QUALITY`, `MAX_QUALITY`)
+## 3. Centralização dos limites de qualidade
 
-**O que foi feito**: as constantes `0` e `50`, antes repetidas como literais em 4 e 3 pontos do código respectivamente, foram centralizadas em `src/domain/item_updaters.py` e aplicadas via `max()`/`min()`.
+Os valores mínimo (zero) e máximo (cinquenta), antes repetidos como números fixos em diversos pontos do código legado, foram centralizados em constantes nomeadas e aplicados de forma consistente em toda a lógica de domínio.
 
-**Por quê**: resolve o code smell 5 do diagnóstico (duplicação de regra de limite) — alterar o limite de qualidade no futuro exige mudar em um único lugar.
+Essa centralização resolve o problema de duplicação da regra de limite identificado no Diagnóstico Técnico: qualquer alteração futura desses valores passa a exigir uma única modificação no código.
 
-## 4. Centralização dos nomes de item (`src/domain/item_names.py`)
+## 4. Centralização dos nomes de item
 
-**O que foi feito**: as strings `"Aged Brie"`, `"Sulfuras, Hand of Ragnaros"` e `"Backstage passes to a TAFKAL80ETC concert"` passaram a ser constantes nomeadas, reutilizadas tanto pela lógica de domínio quanto pelos testes.
+Os textos "Aged Brie", "Sulfuras, Hand of Ragnaros" e "Backstage passes to a TAFKAL80ETC concert", antes repetidos como literais em diversos pontos do código, passaram a ser constantes nomeadas, reutilizadas tanto pela lógica de domínio quanto pelos testes automatizados.
 
-**Por quê**: elimina o risco de divergência entre o nome usado na lógica e o nome usado no teste (erro de digitação silencioso), e documenta a intenção de cada string.
+Essa centralização elimina o risco de divergência entre o nome utilizado na lógica do sistema e o nome utilizado nos testes, além de tornar explícita a intenção de cada constante.
 
-## 5. Implementação da regra de itens Conjurados (`ConjuredItemUpdater`)
+## 5. Implementação da regra dos itens Conjurados
 
-**O que foi feito**: nova estratégia que degrada `quality` em 2 por dia antes do vencimento e 4 por dia depois, respeitando o limite mínimo de 0. Identificação por prefixo (`item_names.is_conjured`, checa `name.startswith("Conjured")`) em vez de nome exato, cobrindo a categoria inteira, não só "Conjured Mana Cake".
+Foi criada uma nova estratégia responsável por aplicar a degradação de 2 pontos de qualidade por dia antes do vencimento e 4 pontos por dia após o vencimento, sempre respeitando o limite mínimo de qualidade igual a zero. A identificação desse tipo de item é feita por meio do prefixo do nome, e não por correspondência exata, de modo a cobrir toda a categoria de itens Conjurados, e não apenas o item "Conjured Mana Cake" citado na especificação.
 
-**Por quê**: corrige o bug confirmado no legado (item já citado no cenário de demonstração, mas tratado como item comum) e atende RF11 (`docs/requisitos.md`). A escolha por prefixo em vez de nome exato segue literalmente o enunciado, que pede suporte à "categoria de itens Conjurados", não a um item específico.
+Essa implementação corrige o problema confirmado no sistema legado, em que o item Conjurado já estava presente no cenário de demonstração, mas era tratado incorretamente como um item comum.
 
-## 6. Testes em duas camadas
+## 6. Criação de testes em duas camadas
 
-**O que foi feito**: `tests/test_caracterizacao.py` (testes de ponta a ponta via `GildedRose`, herdados da rede de segurança original) e `tests/test_item_updaters.py` (testes unitários de cada `*Updater` isoladamente, sem instanciar `GildedRose`).
+Foram criados testes de ponta a ponta, que avaliam o comportamento completo do sistema por meio da classe `GildedRose`, e testes unitários, que avaliam cada estratégia de atualização de forma isolada, sem depender da instância completa do sistema.
 
-**Por quê**: demonstra concretamente a melhoria de testabilidade (RNF04) — algo impossível de fazer de forma isolada no código legado.
+Essa divisão demonstra, na prática, a melhoria de testabilidade exigida pelo requisito não funcional RNF04 (`docs/requisitos.md`) — algo que não era possível realizar no sistema legado.
 
-## Evidência de que nada quebrou
+## Evidência de que o comportamento foi preservado
 
-`docs/evidencias/diff_antes_depois.txt` mostra a única diferença entre a execução do legado e do código refatorado ao longo de 30 dias: o item Conjured, que mudou de propósito (era bug, agora é regra correta). Todos os outros itens — comum, Aged Brie, Sulfuras, Backstage — produzem saída idêntica.
+O arquivo `docs/evidencias/diff_antes_depois.txt` apresenta a comparação completa entre a execução do sistema legado e a execução do sistema refatorado ao longo de 30 dias de simulação. A única diferença encontrada está relacionada ao item Conjurado, que teve seu comportamento corrigido intencionalmente. Todos os demais itens — comum, Aged Brie, Sulfuras e Backstage Passes — produziram exatamente a mesma saída em ambas as versões.

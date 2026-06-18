@@ -1,20 +1,25 @@
 # Lições Aprendidas
 
-Reflexão sobre o processo de modernização do Gilded Rose, dificuldades enfrentadas e limitações da solução entregue.
+Este documento apresenta uma reflexão sobre o processo de modernização do sistema Gilded Rose, incluindo as principais dificuldades enfrentadas pela equipe e as limitações reconhecidas na solução entregue.
 
-## Dificuldades
+## Dificuldades enfrentadas
 
-- **Capturar comportamento antes de entender a intenção**: o código legado tem regras corretas mas difíceis de extrair só de leitura (ex.: a ordem exata entre atualizar `quality` e decrementar `sell_in` importa para o resultado de "Backstage Passes" no dia do show). Foi necessário rodar o sistema (`legacy/texttest_fixture.py`) e observar a saída, não só ler o código, para confirmar a regra real antes de migrar para `src/`.
-- **Approval testing mal configurado**: o teste de aprovação que já vinha no kata (`legacy/tests/test_gilded_rose_approvals.py`) falhava por falta de configuração de reporter de diff, não por bug de lógica. Isso reforçou a importância de distinguir "teste falhou porque o ambiente não está configurado" de "teste falhou porque o comportamento mudou" antes de tirar qualquer conclusão.
-- **Resistir à tentação de reescrever tudo de uma vez**: era visualmente claro, desde o diagnóstico, qual seria o desenho final (Strategy por tipo de item). Ainda assim, a refatoração foi feita em passos pequenos (mover sem alterar → introduzir estratégia → adicionar Conjured), com testes rodando a cada passo, conforme o plano de contingência. Isso custou mais tempo, mas eliminou o risco de uma mudança grande mascarar uma regressão.
+**Compreender o comportamento real antes de confiar apenas na leitura do código.** O sistema legado contém regras corretas, mas de difícil identificação apenas pela leitura do código-fonte. Um exemplo é a ordem exata entre a atualização da qualidade e a redução do número de dias restantes, que influencia diretamente o resultado da regra dos itens Backstage Passes no dia exato do evento. Por esse motivo, foi necessário executar o sistema legado e observar diretamente sua saída, em vez de confiar apenas na interpretação do código, antes de migrar a lógica para a nova estrutura.
 
-## Aprendizados
+**Identificar falhas de configuração de ambiente que pareciam falhas de lógica.** O teste de aprovação que já acompanhava o projeto original falhava devido à ausência de configuração de uma ferramenta de comparação de diferenças, e não devido a um erro na regra de negócio. Essa situação reforçou a importância de investigar a causa real de uma falha de teste antes de tirar qualquer conclusão sobre o comportamento do sistema.
 
-- Testes de caracterização não substituem entender a regra de negócio — eles documentam o que o sistema faz hoje, mas a decisão de o que deveria fazer (como a regra de Conjured) ainda exige ler a especificação.
-- Identificação de tipo de item por comparação de string repetida é um sintoma fácil de detectar e resolver: centralizar em constantes nomeadas e resolver a estratégia em um único ponto (`resolve_updater`) elimina a maior parte da duplicação do código original sem reescrever a regra em si.
-- Separar "o que muda" (regra de cada tipo de item) de "quem orquestra" (`GildedRose`, que decide apenas chamar a estratégia certa) facilita adicionar uma nova categoria de item no futuro sem tocar nas categorias existentes — exatamente o critério de extensibilidade pedido (RNF05).
+**Resistir à tentação de reescrever todo o sistema de uma só vez.** Desde a etapa de diagnóstico, já era possível antever o desenho final da solução, baseado em uma estratégia específica para cada tipo de item. Ainda assim, a equipe optou por realizar a refatoração em etapas pequenas e sequenciais, sempre com os testes em execução a cada passo, conforme definido no Plano de Contingência. Essa abordagem exigiu mais tempo, mas eliminou o risco de uma alteração extensa mascarar uma regressão no comportamento do sistema.
 
-## Limitações da solução entregue
+## Aprendizados obtidos
 
-- A identificação de itens Conjurados usa `name.startswith("Conjured")`. Funciona para o cenário do kata, mas é uma heurística baseada em nome — uma solução de produção real provavelmente teria um campo explícito de categoria no item, não derivado do texto do nome. Essa limitação existe porque a classe `Item` não pode ser alterada (restrição obrigatória do trabalho).
-- Cobertura de teste de 97% não inclui o script de demonstração (`src/texttest_fixture.py`), que é um script de exibição, não lógica de negócio — decisão consciente de não testar unitariamente um `print` de simulação.
+Os testes de caracterização não substituem a compreensão da regra de negócio: eles documentam apenas o que o sistema faz atualmente, mas a decisão sobre o que o sistema deveria fazer — como, por exemplo, a regra correta dos itens Conjurados — ainda depende da leitura cuidadosa da especificação do problema.
+
+A identificação de tipo de item por comparação repetida de texto é um problema relativamente simples de diagnosticar e de corrigir: centralizar os nomes em constantes nomeadas e concentrar a escolha da estratégia em um único ponto do código elimina a maior parte da duplicação presente no sistema original, sem que seja necessário alterar a regra de negócio em si.
+
+Separar claramente "o que muda" — a regra específica de cada tipo de item — de "quem orquestra" — a classe responsável apenas por identificar o tipo do item e delegar a atualização correspondente — facilita a inclusão de novas categorias de item no futuro, sem exigir alterações nas categorias já existentes, atendendo ao critério de extensibilidade definido no requisito não funcional RNF05.
+
+## Limitações reconhecidas na solução entregue
+
+A identificação dos itens Conjurados é realizada por meio do prefixo do seu nome. Essa abordagem é suficiente para o cenário proposto pelo trabalho, mas representa uma heurística baseada em texto: uma solução voltada à produção real provavelmente utilizaria um campo explícito de categoria no item, em vez de depender do nome. Essa limitação existe porque a classe `Item` não pode ser alterada, conforme restrição obrigatória do trabalho.
+
+A cobertura de testes de 97% não inclui o script de demonstração do sistema (`src/texttest_fixture.py`), pois trata-se de um script de exibição de resultados, e não de uma regra de negócio. A decisão de não testá-lo unitariamente foi consciente e deliberada.
