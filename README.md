@@ -1,4 +1,4 @@
-# Gilded Rose — Modernização
+# Gilded Rose: Modernização
 
 Modernização do sistema legado Gilded Rose: diagnóstico técnico, refatoração segura para Clean Architecture e implementação da regra de itens Conjurados, com testes automatizados e evidências de validação.
 
@@ -15,11 +15,11 @@ Modernização do sistema legado Gilded Rose: diagnóstico técnico, refatoraç�
 │   └── tests/
 ├── src/                      # código refatorado (Clean Architecture)
 │   ├── domain/
-│   │   ├── item.py           # classe Item — não alterada (restrição obrigatória)
+│   │   ├── item.py           # classe Item, não alterada (restrição obrigatória)
 │   │   ├── item_names.py     # nomes de item centralizados
 │   │   └── item_updaters.py  # uma estratégia (Strategy) por tipo de item
 │   ├── application/
-│   │   └── gilded_rose.py    # orquestração — delega para a estratégia correta
+│   │   └── gilded_rose.py    # orquestração, delega para a estratégia correta
 │   └── texttest_fixture.py   # mesma simulação do legado, sobre o código novo
 ├── tests/                    # testes contra o código refatorado
 │   ├── test_caracterizacao.py
@@ -77,7 +77,7 @@ O sistema legado concentrava toda a regra de negócio em um único método (`leg
 
 A refatoração (`docs/plano_contingencia.md`) seguiu 3 passos, sempre com testes de caracterização passando:
 
-1. Mover `Item` e `GildedRose` para `src/`, sem alterar lógica — prova que a estrutura nova não quebra nada.
+1. Mover `Item` e `GildedRose` para `src/`, sem alterar lógica, comprovando que a estrutura nova não quebra nada.
 2. Substituir os condicionais por uma estratégia (Strategy/polimorfismo) isolada por tipo de item, em `src/domain/item_updaters.py`.
 3. Adicionar a estratégia de itens Conjurados (`ConjuredItemUpdater`), corrigindo um bug confirmado no legado: o item já existia no cenário de demonstração, mas degradava como item comum em vez de 2x mais rápido.
 

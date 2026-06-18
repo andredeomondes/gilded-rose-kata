@@ -12,11 +12,11 @@ Este documento apresenta uma reflexão sobre o processo de modernização do sis
 
 ## Aprendizados obtidos
 
-Os testes de caracterização não substituem a compreensão da regra de negócio: eles documentam apenas o que o sistema faz atualmente, mas a decisão sobre o que o sistema deveria fazer — como, por exemplo, a regra correta dos itens Conjurados — ainda depende da leitura cuidadosa da especificação do problema.
+Os testes de caracterização não substituem a compreensão da regra de negócio: eles documentam apenas o que o sistema faz atualmente, mas a decisão sobre o que o sistema deveria fazer, como por exemplo a regra correta dos itens Conjurados, ainda depende da leitura cuidadosa da especificação do problema.
 
 A identificação de tipo de item por comparação repetida de texto é um problema relativamente simples de diagnosticar e de corrigir: centralizar os nomes em constantes nomeadas e concentrar a escolha da estratégia em um único ponto do código elimina a maior parte da duplicação presente no sistema original, sem que seja necessário alterar a regra de negócio em si.
 
-Separar claramente "o que muda" — a regra específica de cada tipo de item — de "quem orquestra" — a classe responsável apenas por identificar o tipo do item e delegar a atualização correspondente — facilita a inclusão de novas categorias de item no futuro, sem exigir alterações nas categorias já existentes, atendendo ao critério de extensibilidade definido no requisito não funcional RNF05.
+Separar claramente "o que muda", ou seja, a regra específica de cada tipo de item, de "quem orquestra", ou seja, a classe responsável apenas por identificar o tipo do item e delegar a atualização correspondente, facilita a inclusão de novas categorias de item no futuro, sem exigir alterações nas categorias já existentes, atendendo ao critério de extensibilidade definido no requisito não funcional RNF05.
 
 ## Limitações reconhecidas na solução entregue
 

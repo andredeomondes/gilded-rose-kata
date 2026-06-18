@@ -10,7 +10,7 @@ Essa primeira movimentação teve como objetivo estabelecer a estrutura de pasta
 
 ## 2. Substituição dos condicionais aninhados por estratégias específicas
 
-Cada tipo de item — comum, Aged Brie, Sulfuras e Backstage Passes — passou a ter sua própria classe de atualização, com um único método responsável por aplicar a regra correspondente. A classe `GildedRose` foi simplificada para apenas identificar o tipo de cada item e delegar a atualização à classe responsável.
+Cada tipo de item, sendo eles comum, Aged Brie, Sulfuras e Backstage Passes, passou a ter sua própria classe de atualização, com um único método responsável por aplicar a regra correspondente. A classe `GildedRose` foi simplificada para apenas identificar o tipo de cada item e delegar a atualização à classe responsável.
 
 Essa mudança resolve diretamente os problemas identificados no Diagnóstico Técnico relacionados a condicionais aninhados, duplicação de comparação de texto, mistura de responsabilidades e acoplamento indevido entre regras distintas. Cada regra de negócio passou a poder ser lida, compreendida e testada de forma isolada, sem necessidade de instanciar o sistema completo.
 
@@ -36,8 +36,8 @@ Essa implementação corrige o problema confirmado no sistema legado, em que o i
 
 Foram criados testes de ponta a ponta, que avaliam o comportamento completo do sistema por meio da classe `GildedRose`, e testes unitários, que avaliam cada estratégia de atualização de forma isolada, sem depender da instância completa do sistema.
 
-Essa divisão demonstra, na prática, a melhoria de testabilidade exigida pelo requisito não funcional RNF04 (`docs/requisitos.md`) — algo que não era possível realizar no sistema legado.
+Essa divisão demonstra, na prática, a melhoria de testabilidade exigida pelo requisito não funcional RNF04 (`docs/requisitos.md`), algo que não era possível realizar no sistema legado.
 
 ## Evidência de que o comportamento foi preservado
 
-O arquivo `docs/evidencias/diff_antes_depois.txt` apresenta a comparação completa entre a execução do sistema legado e a execução do sistema refatorado ao longo de 30 dias de simulação. A única diferença encontrada está relacionada ao item Conjurado, que teve seu comportamento corrigido intencionalmente. Todos os demais itens — comum, Aged Brie, Sulfuras e Backstage Passes — produziram exatamente a mesma saída em ambas as versões.
+O arquivo `docs/evidencias/diff_antes_depois.txt` apresenta a comparação completa entre a execução do sistema legado e a execução do sistema refatorado ao longo de 30 dias de simulação. A única diferença encontrada está relacionada ao item Conjurado, que teve seu comportamento corrigido intencionalmente. Todos os demais itens, sendo eles comum, Aged Brie, Sulfuras e Backstage Passes, produziram exatamente a mesma saída em ambas as versões.
