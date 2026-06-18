@@ -7,3 +7,8 @@ __pycache__/
 .pytest_cache/
 .coverage
 .cache/
+
+act.md
+.agents/
+.claude/
+skills-lock.json
