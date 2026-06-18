@@ -3,8 +3,11 @@
 Prova o atendimento ao RNF04 (docs/requisitos.md): cada regra pode ser
 testada isoladamente.
 """
+import pytest
+
 from src.domain.item import Item
 from src.domain.updaters import (
+    ItemUpdater,
     NormalItemUpdater,
     AgedBrieUpdater,
     SulfurasUpdater,
@@ -64,3 +67,14 @@ def test_conjured_updater_degrada_4_por_dia_apos_vencimento():
     item = Item("Conjured Mana Cake", sell_in=0, quality=20)
     ConjuredItemUpdater().update(item)
     assert item.quality == 16
+
+
+def test_item_repr_mostra_name_sell_in_e_quality():
+    item = Item("item comum", sell_in=10, quality=20)
+    assert repr(item) == "item comum, 10, 20"
+
+
+def test_item_updater_base_levanta_not_implemented():
+    item = Item("item comum", sell_in=10, quality=20)
+    with pytest.raises(NotImplementedError):
+        ItemUpdater().update(item)
