@@ -1,2 +1,6 @@
 docs/plan.md
 docs/plano-execucao.md
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/

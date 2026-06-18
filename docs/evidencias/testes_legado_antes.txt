@@ -1,0 +1,64 @@
+============================= test session starts ==============================
+platform linux -- Python 3.14.5, pytest-9.1.0, pluggy-1.6.0 -- /home/andredeomondes/gilded-rose/legacy/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/andredeomondes/gilded-rose/legacy
+plugins: approvaltests-18.1.1, approvaltests-0.2.4
+collecting ... collected 2 items
+
+tests/test_gilded_rose.py::GildedRoseTest::test_foo FAILED               [ 50%]
+tests/test_gilded_rose_approvals.py::test_gilded_rose_approvals FAILED   [100%]
+
+=================================== FAILURES ===================================
+___________________________ GildedRoseTest.test_foo ____________________________
+
+self = <tests.test_gilded_rose.GildedRoseTest testMethod=test_foo>
+
+    def test_foo(self):
+        items = [Item("foo", 0, 0)]
+        gilded_rose = GildedRose(items)
+        gilded_rose.update_quality()
+>       self.assertEqual("fixme", items[0].name)
+E       AssertionError: 'fixme' != 'foo'
+E       - fixme
+E       + foo
+
+tests/test_gilded_rose.py:12: AssertionError
+__________________________ test_gilded_rose_approvals __________________________
+
+    def test_gilded_rose_approvals():
+        orig_sysout = sys.stdout
+        try:
+            fake_stdout = io.StringIO()
+            sys.stdout = fake_stdout
+            sys.argv = ["texttest_fixture.py", 30]
+            main()
+            answer = fake_stdout.getvalue()
+        finally:
+            sys.stdout = orig_sysout
+    
+>       verify(answer)
+
+tests/test_gilded_rose_approvals.py:18: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.14/site-packages/approvaltests/file_approver.py:60: in verify
+    verified = FileApprover.verify_files(approved, received, reporter, comparator)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.14/site-packages/approvaltests/file_approver.py:120: in verify_files
+    worked = reporter.report(received_file, approved_file)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <approvaltests.reporters.generic_diff_reporter_factory.NoConfigReporter object at 0x7fc30bf71be0>
+received_path = '/home/andredeomondes/gilded-rose/legacy/tests/approved_files/test_gilded_rose_approvals.test_gilded_rose_approvals.received.txt'
+approved_path = '/home/andredeomondes/gilded-rose/legacy/tests/approved_files/test_gilded_rose_approvals.test_gilded_rose_approvals.approved.txt'
+
+    @override
+    def report(self, received_path: str, approved_path: str) -> bool:
+>       raise RuntimeError("This machine has no reporter configuration")
+E       RuntimeError: This machine has no reporter configuration
+
+.venv/lib/python3.14/site-packages/approvaltests/reporters/generic_diff_reporter_factory.py:20: RuntimeError
+=========================== short test summary info ============================
+FAILED tests/test_gilded_rose.py::GildedRoseTest::test_foo - AssertionError: ...
+FAILED tests/test_gilded_rose_approvals.py::test_gilded_rose_approvals - Runt...
+============================== 2 failed in 0.14s ===============================
