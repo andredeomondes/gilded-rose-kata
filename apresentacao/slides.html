@@ -3,383 +3,1079 @@
 <head>
 <meta charset="UTF-8">
 <title>Gilded Rose — Modernização de Sistema Legado</title>
-<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
-  body { font-family: 'Georgia', 'Times New Roman', serif; background:#0f1115; }
-  .slide {
-    width: 1280px;
-    height: 720px;
-    margin: 40px auto;
-    position: relative;
-    overflow: hidden;
-    background: #ffffff;
-    box-shadow: 0 10px 40px rgba(0,0,0,.4);
+  :root{
+    --bg-canvas:#EDEAF5;
+    --panel:#FFFFFF;
+    --line:rgba(130,87,229,.16);
+    --text:#211D2E;
+    --text-soft:#4A4460;
+    --text-faint:#726C8A;
+    --gold:#7C3AED;
+    --gold-soft:#9D6FF0;
+    --grad-gold:linear-gradient(135deg,#9D6FF0 0%,#7C3AED 55%,#4D6FFF 100%);
+    --brick:#C0314F;
+    --brick-bg:#FCEEF1;
+    --moss:#157A56;
+    --moss-bg:#E8F6F0;
   }
-  .slide-number {
-    position: absolute;
-    bottom: 24px;
-    right: 32px;
-    font-size: 14px;
-    color: #9ca3af;
-    font-family: 'Helvetica', Arial, sans-serif;
+  *{box-sizing:border-box;}
+  body{
+    font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+    background:var(--bg-canvas);
+    margin:0; padding:48px 0 96px;
   }
-  .accent-bar { width: 56px; height: 6px; background: #b91c1c; }
-  .dl-btn {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    z-index: 50;
-    font-family: Arial, sans-serif;
+  .toolbar{ text-align:center; color:#6E6884; font-size:13px; padding-bottom:28px; letter-spacing:.02em; font-family:'JetBrains Mono',monospace; }
+
+  .deck{
+    width:1280px; height:720px; margin:0 auto 40px; position:relative; overflow:hidden;
+    background:radial-gradient(circle at 100% 0%, rgba(130,87,229,.08), transparent 45%), radial-gradient(circle at 0% 100%, rgba(77,111,255,.06), transparent 50%), var(--panel);
+    box-shadow:0 24px 60px rgba(40,20,80,.18); display:flex; border:1px solid var(--line);
   }
-  code, .mono, .tree { font-family: 'Courier New', monospace; }
-  .code-block {
-    background: #111827;
-    color: #e5e7eb;
-    border-radius: 6px;
-    padding: 14px 18px;
-    font-size: 14px;
-    line-height: 1.45;
-    white-space: pre;
-    overflow: auto;
+
+  .content{ flex:1 1 auto; position:relative; padding:28px 52px 0; display:flex; flex-direction:column; min-width:0; }
+  .body{ flex:1 1 auto; display:flex; flex-direction:column; min-height:0; }
+  .body.is-centered{ justify-content:center; }
+
+  .footer{
+    flex:0 0 auto; margin-top:auto; display:flex; justify-content:space-between; align-items:center;
+    border-top:1px solid var(--line); padding:10px 0; font-family:'JetBrains Mono',monospace; font-size:10px;
+    letter-spacing:.06em; color:var(--text-faint); text-transform:uppercase;
   }
-  .tree-block {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    padding: 16px 20px;
-    font-size: 14px;
-    line-height: 1.6;
-    white-space: pre;
-    color: #1f2937;
-  }
-  .before-tag { background:#fee2e2; color:#991b1b; }
-  .after-tag { background:#dcfce7; color:#166534; }
+
+  .brand{ position:absolute; top:24px; right:52px; height:20px; opacity:.92; }
+  .dl-btn{ position:absolute; top:14px; right:14px; z-index:50; font-family:'JetBrains Mono',monospace; font-size:10px; background:var(--gold); color:#fff; border:none; padding:6px 11px; border-radius:3px; cursor:pointer; font-weight:600; }
+
+  .icon{ width:15px; height:15px; flex:0 0 auto; color:var(--gold); stroke-width:2px; }
+  .eyebrow{ display:flex; align-items:center; gap:7px; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--gold); margin-bottom:7px; font-weight:600; }
+  .h-title{ font-family:'Sora','Helvetica Neue',Helvetica,Arial,sans-serif; font-weight:700; color:var(--text); line-height:1.1; margin:0; }
+  .h-title.hero{ background:var(--grad-gold); -webkit-background-clip:text; background-clip:text; color:transparent; display:inline-block; }
+  .h-rule{ width:36px; height:3px; background:var(--grad-gold); margin-top:10px; border-radius:2px; }
+
+  .tag{ font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:600; padding:2px 8px; border-radius:3px; letter-spacing:.03em; }
+  .tag-before{ background:var(--brick-bg); color:var(--brick); }
+  .tag-after{ background:var(--moss-bg); color:var(--moss); }
+  .tag-file{ background:#F1EDFB; color:var(--text-soft); }
+
+  .code-wrap{ border-radius:6px; overflow:hidden; border:1px solid var(--line); border-left:3px solid var(--gold); }
+  .code-wrap pre{ margin:0 !important; background:#282C34 !important; }
+  .code-wrap pre, .code-wrap code{ color:#D8DCE2; }
+  .code-wrap code{ padding:8px 13px !important; font-family:'JetBrains Mono',monospace !important; font-size:12px; line-height:1.42; display:block; overflow:auto; font-weight:500; }
+  .code-wrap.dense code{ font-size:10.5px; line-height:1.32; padding:7px 12px !important; }
+  .tree{ background:#F8F6FD; border:1px solid var(--line); border-radius:5px; padding:12px 16px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.45; white-space:pre; color:var(--text); }
+
+  .callout{ border-left:3px solid var(--brick); padding:9px 14px; background:#FBF9FE; }
+  .callout p:first-child{ font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--brick); font-weight:700; margin:0; }
+  .callout p:last-child{ margin:5px 0 0; }
+
+  .card{ border:1px solid var(--line); border-radius:7px; padding:10px 13px; background:#FAF9FE; }
+  .card-letter{ display:inline-flex; align-items:center; justify-content:center; width:23px; height:23px; border-radius:4px; background:var(--grad-gold); color:#fff; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12px; }
+
+  .meta-row{ display:flex; gap:16px; align-items:baseline; }
+  .meta-label{ font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--text-faint); width:100px; flex:0 0 auto; }
+  .meta-value{ font-size:15px; color:var(--text); }
+
+  .stat{ font-family:'JetBrains Mono',monospace; font-weight:700; background:var(--grad-gold); -webkit-background-clip:text; background-clip:text; color:transparent; }
+
+  .reqtable{ display:flex; flex-direction:column; border:1px solid var(--line); border-radius:7px; overflow:hidden; }
+  .reqrow{ display:flex; border-bottom:1px solid var(--line); }
+  .reqrow:last-child{ border-bottom:none; }
+  .reqrow.head{ background:#F1EDFB; }
+  .reqcode{ width:78px; flex:0 0 auto; padding:6px 11px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--gold); font-weight:700; border-right:1px solid var(--line); display:flex; align-items:center; }
+  .reqdesc{ padding:6px 13px; font-size:11.5px; color:var(--text); line-height:1.35; display:flex; align-items:center; }
+  .reqrow.head .reqcode, .reqrow.head .reqdesc{ color:var(--text-faint); font-family:'JetBrains Mono',monospace; font-size:9.5px; text-transform:uppercase; letter-spacing:.07em; }
+
+  .checklist{ display:flex; flex-direction:column; gap:7px; }
+  .checkitem{ display:flex; align-items:center; gap:9px; font-size:12.5px; color:var(--text); }
+  .checkitem .icon{ color:var(--moss); width:14px; height:14px; }
+
+  .avatars{ display:flex; gap:16px; align-items:flex-start; }
+  .avatar{ display:flex; flex-direction:column; align-items:center; gap:7px; }
+  .avatar-photo{ width:56px; height:56px; border-radius:50%; object-fit:cover; border:2px solid var(--gold-soft); box-shadow:0 0 0 4px rgba(130,87,229,.12); }
+  .avatar-photo.placeholder{ display:flex; align-items:center; justify-content:center; background:var(--grad-gold); color:#fff; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; }
+  .avatar-name{ font-size:9.5px; color:var(--text-soft); text-align:center; max-width:74px; line-height:1.3; }
+
+  ::selection{ background:var(--gold-soft); color:#fff; }
 </style>
 </head>
-<body class="pb-20">
+<body>
 
-<div class="text-center text-gray-400 text-sm pt-6 font-sans">Gilded Rose — Modernização de Sistema Legado · clique no botão de cada slide para baixar como PNG</div>
+<div class="toolbar">GILDED ROSE — MODERNIZAÇÃO DE SISTEMA LEGADO · clique no botão de cada slide para baixar como PNG</div>
 
-<!-- 1: CAPA -->
-<div class="slide" id="slide-1">
-  <button class="dl-btn bg-gray-900 text-white text-xs px-3 py-1 rounded" onclick="baixar('slide-1','01-capa')">baixar PNG</button>
-  <div class="h-full w-full flex flex-col justify-center items-start px-24">
-    <p class="text-sm tracking-widest text-gray-500 font-sans uppercase mb-2">Qualidade de Software e Testes — Prof. Leonardo Cardia</p>
-    <div class="accent-bar mb-6"></div>
-    <h1 class="text-6xl font-bold text-gray-900 mb-4">Gilded Rose</h1>
-    <h2 class="text-2xl text-gray-600 mb-12">Modernização de um Sistema Legado</h2>
-    <div class="font-sans text-gray-500 text-base leading-relaxed">
-      <p>Andre Junio Deomondes Carvalhal</p>
-      <p>Gianluca Motta Lopo</p>
-      <p>Igor Lima Carvalho</p>
-      <p>Lucca Torres Badaró Silvani</p>
-      <p>Ryan Luigy Paixão da Luz</p>
-    </div>
-  </div>
-  <div class="slide-number">1</div>
-</div>
-
-<!-- 2: CONTEXTO -->
-<div class="slide" id="slide-2">
-  <button class="dl-btn bg-gray-900 text-white text-xs px-3 py-1 rounded" onclick="baixar('slide-2','02-contexto')">baixar PNG</button>
-  <div class="h-full w-full flex flex-col justify-center px-24">
-    <div class="accent-bar mb-6"></div>
-    <h1 class="text-4xl font-bold text-gray-900 mb-10">O desafio</h1>
-    <ul class="text-xl text-gray-700 space-y-5 leading-relaxed">
-      <li>Sistema legado que atualiza a qualidade dos itens de um estoque, todos os dias.</li>
-      <li>Funciona, mas é difícil de manter, testar e estender.</li>
-      <li>Missão: modernizar preservando o comportamento existente e adicionar a categoria <span class="font-semibold">Conjurados</span>.</li>
-      <li class="font-semibold text-red-700">Restrição: a classe Item e a propriedade items nunca podem ser alteradas.</li>
-    </ul>
-  </div>
-  <div class="slide-number">2</div>
-</div>
-
-<!-- 3: DIAGNOSTICO -->
-<div class="slide" id="slide-3">
-  <button class="dl-btn bg-gray-900 text-white text-xs px-3 py-1 rounded" onclick="baixar('slide-3','03-diagnostico')">baixar PNG</button>
-  <div class="h-full w-full flex flex-col justify-center px-24">
-    <div class="accent-bar mb-6"></div>
-    <h1 class="text-4xl font-bold text-gray-900 mb-10">Diagnóstico técnico</h1>
-    <div class="grid grid-cols-2 gap-x-12 gap-y-6 text-lg text-gray-700">
-      <div>
-        <p class="font-semibold text-gray-900">Condicionais aninhados</p>
-        <p class="text-base text-gray-500">até 4 níveis em um único bloco</p>
-      </div>
-      <div>
-        <p class="font-semibold text-gray-900">Identificação por texto</p>
-        <p class="text-base text-gray-500">nome do item comparado repetidas vezes</p>
-      </div>
-      <div>
-        <p class="font-semibold text-gray-900">Responsabilidades misturadas</p>
-        <p class="text-base text-gray-500">um método decide tudo, para todo tipo de item</p>
-      </div>
-      <div>
-        <p class="font-semibold text-gray-900">Baixa testabilidade</p>
-        <p class="text-base text-gray-500">impossível testar uma regra isoladamente</p>
-      </div>
-    </div>
-    <div class="mt-10 inline-block px-4 py-3 bg-red-50 border border-red-200 rounded text-red-800 text-base">
-      Bug confirmado: o item Conjurado já existia na simulação, mas degradava como item comum.
-    </div>
-  </div>
-  <div class="slide-number">3</div>
-</div>
-
-<!-- 4: ESTRUTURA DE PASTAS ANTES x DEPOIS -->
-<div class="slide" id="slide-4">
-  <button class="dl-btn bg-gray-900 text-white text-xs px-3 py-1 rounded" onclick="baixar('slide-4','04-estrutura-pastas')">baixar PNG</button>
-  <div class="h-full w-full flex flex-col justify-center px-20">
-    <div class="accent-bar mb-6"></div>
-    <h1 class="text-3xl font-bold text-gray-900 mb-8">Como o código estava organizado, e como ficou</h1>
-    <div class="grid grid-cols-2 gap-10">
-      <div>
-        <span class="before-tag text-xs font-sans font-semibold px-2 py-1 rounded">antes</span>
-        <div class="tree-block mt-3">
-legacy/
-├── gilded_rose.py
-│   (Item e GildedRose
-│    no mesmo arquivo)
-├── texttest_fixture.py
-└── tests/
-    └── test_gilded_rose.py
+<!-- ============ 01 · CAPA ============ -->
+<div class="deck" id="slide-1">
+  <button class="dl-btn" onclick="baixar('slide-1','01-capa')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body is-centered">
+      <div style="display:grid; grid-template-columns:1.15fr 0.85fr; gap:32px; align-items:center;">
+        <div>
+          <p class="eyebrow">Trabalho acadêmico</p>
+          <h1 class="h-title hero" style="font-size:50px;">Gilded&nbsp;Rose</h1>
+          <h2 style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; font-weight:400; font-size:17px; color:var(--text-soft); margin:5px 0 0;">Modernização de um Sistema Legado</h2>
+          <div class="h-rule"></div>
+          <div style="margin-top:22px; display:flex; flex-direction:column; gap:9px;">
+            <div class="meta-row"><span class="meta-label">Matéria</span><span class="meta-value">Alta Qualidade de Software</span></div>
+            <div class="meta-row"><span class="meta-label">Professor</span><span class="meta-value">Leonardo Cardia</span></div>
+          </div>
         </div>
+        <img src="assets/gilded-rose.png" alt="Gilded Rose" style="width:100%; border-radius:14px; box-shadow:0 18px 40px rgba(40,20,80,.25), 0 0 0 1px rgba(130,87,229,.18);">
       </div>
-      <div>
-        <span class="after-tag text-xs font-sans font-semibold px-2 py-1 rounded">depois</span>
-        <div class="tree-block mt-3">
-src/
-├── domain/
-│   ├── item.py
-│   ├── item_names.py
-│   └── item_updaters.py
-├── application/
-│   └── gilded_rose.py
-└── texttest_fixture.py
-tests/
-├── test_caracterizacao.py
-└── test_item_updaters.py
+      <div style="margin-top:26px;">
+        <p class="meta-label" style="margin-bottom:10px;">Alunos</p>
+        <div class="avatars">
+          <div class="avatar"><img src="assets/aluno-andre.png" class="avatar-photo" alt="Andre"><span class="avatar-name">Andre Carvalhal</span></div>
+          <div class="avatar"><div class="avatar-photo placeholder">GM</div><span class="avatar-name">Gianluca Lopo</span></div>
+          <div class="avatar"><img src="assets/aluno-Igor.png" class="avatar-photo" alt="Igor"><span class="avatar-name">Igor Carvalho</span></div>
+          <div class="avatar"><img src="assets/aluno-lucca.png" class="avatar-photo" alt="Lucca"><span class="avatar-name">Lucca Silvani</span></div>
+          <div class="avatar"><img src="assets/aluno-ryan.png" class="avatar-photo" alt="Ryan"><span class="avatar-name">Ryan Paixão</span></div>
         </div>
       </div>
     </div>
-    <p class="mt-8 text-lg text-gray-600">Um arquivo com tudo misturado deu lugar a uma pasta por responsabilidade: regra de negócio em domain, orquestração em application.</p>
+    <div class="footer"><span>Gilded Rose &middot; Alta Qualidade de Software</span><span>01 / 26</span></div>
   </div>
-  <div class="slide-number">4</div>
 </div>
 
-<!-- 5: CODIGO ANTIGO COMPLETO -->
-<div class="slide" id="slide-5">
-  <button class="dl-btn bg-gray-900 text-white text-xs px-3 py-1 rounded" onclick="baixar('slide-5','05-antes-codigo-completo')">baixar PNG</button>
-  <div class="h-full w-full flex flex-col justify-center px-16">
-    <div class="flex items-center gap-3 mb-2">
-      <h1 class="text-xl font-bold text-gray-900">Antes: um único método para tudo</h1>
-      <span class="before-tag text-xs font-sans font-semibold px-2 py-1 rounded">legacy/gilded_rose.py</span>
+<!-- ============ 02 · SUMÁRIO ============ -->
+<div class="deck" id="slide-2">
+  <button class="dl-btn" onclick="baixar('slide-2','02-sumario')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body is-centered">
+      <p class="eyebrow">Sumário</p>
+      <h1 class="h-title" style="font-size:23px;">24 capítulos — do problema ao código-fonte real</h1>
+      <div class="h-rule"></div>
+      <div style="margin-top:13px; display:grid; grid-template-columns:1fr 1fr; gap:5px 36px; font-size:11px; color:var(--text);">
+        <div style="display:flex; gap:8px;"><span style="font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700;">01</span> O desafio</div>
+        <div style="display:flex; gap:8px;"><span style="font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700;">13</span> Código real: aged_brie &amp; sulfuras</div>
+        <div style="display:flex; gap:8px;"><span style="font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700;">02</span> Diagnóstico</div>
+        <div style="display:flex; gap:8px;"><span style="font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700;">14</span> Código real: backstage_passes.py</div>
+        <div style="display:flex; gap:8px;"><span style="font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700;">03</span> Requisitos funcionais</div>
+        <div style="display:flex; gap:8px;"><span style="font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700;">15</span> Código real: conjured.py</div>
+        <div style="display:flex; gap:8px;"><span style="font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700;">04</span> Requisitos não funcionais</div>
+        <div style="display:flex; gap:8px;"><span style="font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700;">16</span> Código real: registry.py (1/2)</div>
+        <div style="display:flex; gap:8px;"><span style="font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700;">05</span> Plano de contingência</div>
+        <div style="display:flex; gap:8px;"><span style="font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700;">17</span> Código real: registry.py (2/2)</div>
+        <div style="display:flex; gap:8px;"><span style="font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700;">06</span> O código legado, na íntegra</div>
+        <div style="display:flex; gap:8px;"><span style="font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700;">18</span> Código real: gilded_rose.py</div>
+        <div style="display:flex; gap:8px;"><span style="font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700;">07</span> Testes de caracterização</div>
+        <div style="display:flex; gap:8px;"><span style="font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700;">19</span> Código real: test_gilded_rose_di.py</div>
+        <div style="display:flex; gap:8px;"><span style="font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700;">08</span> Reorganização &amp; arquitetura</div>
+        <div style="display:flex; gap:8px;"><span style="font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700;">20</span> Conjured: o resultado</div>
+        <div style="display:flex; gap:8px;"><span style="font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700;">09</span> SOLID</div>
+        <div style="display:flex; gap:8px;"><span style="font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700;">21</span> Testes &amp; evidências</div>
+        <div style="display:flex; gap:8px;"><span style="font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700;">10</span> Código real: item.py</div>
+        <div style="display:flex; gap:8px;"><span style="font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700;">22</span> Entrega completa</div>
+        <div style="display:flex; gap:8px;"><span style="font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700;">11</span> Código real: item_names.py</div>
+        <div style="display:flex; gap:8px;"><span style="font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700;">23</span> Lições aprendidas</div>
+        <div style="display:flex; gap:8px;"><span style="font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700;">12</span> Código real: base.py &amp; normal.py</div>
+        <div style="display:flex; gap:8px;"><span style="font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700;">24</span> Resultado</div>
+      </div>
     </div>
-    <div class="code-block text-[12.5px]" style="line-height:1.3; padding:10px 16px;">
-def update_quality(self):
+    <div class="footer"><span>Gilded Rose &middot; Alta Qualidade de Software</span><span>02 / 26</span></div>
+  </div>
+</div>
+
+<!-- ============ 03 · CAP.01 O DESAFIO ============ -->
+<div class="deck" id="slide-3">
+  <button class="dl-btn" onclick="baixar('slide-3','03-desafio')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body is-centered">
+      <p class="eyebrow"><i data-lucide="target" class="icon"></i>Capítulo 01</p>
+      <h1 class="h-title" style="font-size:30px;">Correto, mas frágil para mudar</h1>
+      <div class="h-rule"></div>
+      <div style="margin-top:20px; display:grid; grid-template-columns:1.3fr 1fr; gap:26px;">
+        <ul style="font-size:15px; color:var(--text); line-height:1.75; list-style:none; padding:0; margin:0;">
+          <li>Atualiza quality e sell_in de todo o estoque, todo dia.</li>
+          <li>Funciona — mas testar ou estender uma regra exige reler o método inteiro.</li>
+          <li>Missão: adicionar <strong>Conjured</strong> sem quebrar o resto.</li>
+        </ul>
+        <div class="callout">
+          <p>Restrição obrigatória</p>
+          <p style="font-size:12.5px; color:var(--text); line-height:1.5;"><code>Item</code> e <code>items</code> nunca podem ser alterados. -2,0 pontos se violado.</p>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>Capítulo 01 &middot; O desafio</span><span>03 / 26</span></div>
+  </div>
+</div>
+
+<!-- ============ 04 · CAP.02 DIAGNOSTICO ============ -->
+<div class="deck" id="slide-4">
+  <button class="dl-btn" onclick="baixar('slide-4','04-diagnostico')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body is-centered">
+      <p class="eyebrow"><i data-lucide="search" class="icon"></i>Capítulo 02 &middot; legacy/gilded_rose.py</p>
+      <h1 class="h-title" style="font-size:24px;">Quatro problemas, um bug confirmado</h1>
+      <div class="h-rule"></div>
+      <div style="margin-top:16px; display:grid; grid-template-columns:1fr 1fr; gap:11px 20px; font-size:12.5px;">
+        <div><p style="font-weight:700; color:var(--text);">Aninhamento de 4 níveis</p><p style="color:var(--text-soft); margin-top:2px; font-size:11.5px;">linhas 26–36, um bloco só</p></div>
+        <div><p style="font-weight:700; color:var(--text);">Nome do item repetido</p><p style="color:var(--text-soft); margin-top:2px; font-size:11.5px;">"Sulfuras..." aparece 4x</p></div>
+        <div><p style="font-weight:700; color:var(--text);">Tudo num método só</p><p style="color:var(--text-soft); margin-top:2px; font-size:11.5px;">5 tipos de item, 1 responsável</p></div>
+        <div><p style="font-weight:700; color:var(--text);">Cobertura real: 0%</p><p style="color:var(--text-soft); margin-top:2px; font-size:11.5px;">1 teste placeholder + 1 e2e</p></div>
+      </div>
+      <div class="callout" style="margin-top:16px;">
+        <p>Bug confirmado</p>
+        <p style="font-size:12.5px; color:var(--text);">"Conjured Mana Cake" já estava na simulação — mas degradava 1/dia em vez de 2.</p>
+      </div>
+    </div>
+    <div class="footer"><span>Capítulo 02 &middot; Diagnóstico</span><span>04 / 26</span></div>
+  </div>
+</div>
+
+<!-- ============ 05 · CAP.03 REQUISITOS & PLANO ============ -->
+<div class="deck" id="slide-5">
+  <button class="dl-btn" onclick="baixar('slide-5','05-rf')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body">
+      <p class="eyebrow"><i data-lucide="clipboard-check" class="icon"></i>Capítulo 03 &middot; docs/requisitos.pdf</p>
+      <h1 class="h-title" style="font-size:21px;">13 requisitos funcionais, rastreáveis por código</h1>
+      <div class="reqtable" style="margin-top:11px; font-size:11.5px;">
+        <div class="reqrow head"><div class="reqcode">Código</div><div class="reqdesc">Descrição</div></div>
+        <div class="reqrow"><div class="reqcode">RF01</div><div class="reqdesc">Todo item perde 1 dia de sell_in por dia, exceto Sulfuras.</div></div>
+        <div class="reqrow"><div class="reqcode">RF02</div><div class="reqdesc">Item comum perde 1 ponto de quality/dia antes do vencimento.</div></div>
+        <div class="reqrow"><div class="reqcode">RF03</div><div class="reqdesc">Item comum perde 2 pontos de quality/dia após o vencimento.</div></div>
+        <div class="reqrow"><div class="reqcode">RF04</div><div class="reqdesc">Aged Brie ganha 1 ponto de quality/dia antes do vencimento.</div></div>
+        <div class="reqrow"><div class="reqcode">RF05</div><div class="reqdesc">Aged Brie ganha 2 pontos de quality/dia após o vencimento.</div></div>
+        <div class="reqrow"><div class="reqcode">RF06</div><div class="reqdesc">Sulfuras nunca tem quality ou sell_in alterados.</div></div>
+        <div class="reqrow"><div class="reqcode">RF07</div><div class="reqdesc">Backstage passes ganha 1 de quality/dia quando sell_in &gt; 10.</div></div>
+        <div class="reqrow"><div class="reqcode">RF08</div><div class="reqdesc">Backstage passes ganha 2 de quality/dia quando sell_in entre 6 e 10.</div></div>
+        <div class="reqrow"><div class="reqcode">RF09</div><div class="reqdesc">Backstage passes ganha 3 de quality/dia quando sell_in &le; 5.</div></div>
+        <div class="reqrow"><div class="reqcode">RF10</div><div class="reqdesc">Quality de Backstage passes é zerada imediatamente após o evento.</div></div>
+        <div class="reqrow"><div class="reqcode">RF11</div><div class="reqdesc">Conjured perde quality 2x mais rápido: -2/dia antes, -4/dia após o vencimento.</div></div>
+        <div class="reqrow"><div class="reqcode">RF12</div><div class="reqdesc">Quality nunca é inferior a zero, em nenhum tipo de item.</div></div>
+        <div class="reqrow"><div class="reqcode">RF13</div><div class="reqdesc">Quality nunca passa de 50, exceto Sulfuras, fixa em 80.</div></div>
+      </div>
+    </div>
+    <div class="footer"><span>Capítulo 03 &middot; Requisitos funcionais</span><span>05 / 26</span></div>
+  </div>
+</div>
+<div class="deck" id="slide-6">
+  <button class="dl-btn" onclick="baixar('slide-6','06-rnf')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body">
+      <p class="eyebrow"><i data-lucide="list-checks" class="icon"></i>Capítulo 04 &middot; docs/requisitos.pdf</p>
+      <h1 class="h-title" style="font-size:22px;">7 atributos de qualidade exigidos da solução</h1>
+      <div class="reqtable" style="margin-top:14px; font-size:12.5px;">
+        <div class="reqrow head"><div class="reqcode">Código</div><div class="reqdesc">Descrição</div></div>
+        <div class="reqrow"><div class="reqcode">RNF01</div><div class="reqdesc">A classe Item não pode ser alterada.</div></div>
+        <div class="reqrow"><div class="reqcode">RNF02</div><div class="reqdesc">A propriedade items de GildedRose não pode ser alterada.</div></div>
+        <div class="reqrow"><div class="reqcode">RNF03</div><div class="reqdesc">Comportamento existente preservado, validado por testes de caracterização.</div></div>
+        <div class="reqrow"><div class="reqcode">RNF04</div><div class="reqdesc">Cada tipo de item deve ser testável de forma isolada.</div></div>
+        <div class="reqrow"><div class="reqcode">RNF05</div><div class="reqdesc">Nova categoria de item sem modificar a lógica das categorias existentes.</div></div>
+        <div class="reqrow"><div class="reqcode">RNF06</div><div class="reqdesc">Sem identificação de tipo por comparação repetida de texto.</div></div>
+        <div class="reqrow"><div class="reqcode">RNF07</div><div class="reqdesc">Padrão arquitetural reconhecido, com domínio separado da orquestração.</div></div>
+      </div>
+    </div>
+    <div class="footer"><span>Capítulo 04 &middot; Requisitos não funcionais</span><span>06 / 26</span></div>
+  </div>
+</div>
+<div class="deck" id="slide-7">
+  <button class="dl-btn" onclick="baixar('slide-7','07-plano')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body is-centered">
+      <p class="eyebrow"><i data-lucide="shield" class="icon"></i>Capítulo 05 &middot; docs/plano_contingencia.pdf</p>
+      <h1 class="h-title" style="font-size:22px;">Refatoração planejada antes de codar</h1>
+      <div class="h-rule"></div>
+      <div style="margin-top:16px; display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+        <div>
+          <p style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-faint);">Ordem de execução</p>
+          <ol style="margin-top:8px; font-size:12.5px; color:var(--text); line-height:1.65; padding-left:18px;">
+            <li>Testes de caracterização, contra o legado intocado.</li>
+            <li>Extração da lógica para a camada de domínio.</li>
+            <li>Implementação do Conjured, com testes dedicados.</li>
+            <li>Suíte completa + evidências comparadas com o antes.</li>
+          </ol>
+        </div>
+        <div>
+          <p style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-faint);">Principais riscos cobertos</p>
+          <div style="margin-top:8px; display:flex; flex-direction:column; gap:8px;">
+            <div class="card"><p style="font-size:11.5px; color:var(--text); font-weight:600;">Quebrar regra já existente</p><p style="font-size:10.5px; color:var(--text-soft); margin-top:3px;">Mitigado por testes de caracterização escritos antes de qualquer mudança estrutural.</p></div>
+            <div class="card"><p style="font-size:11.5px; color:var(--text); font-weight:600;">Implementar Conjured incorretamente</p><p style="font-size:10.5px; color:var(--text-soft); margin-top:3px;">Mitigado por testes dedicados à degradação 2x/4x e ao limite mínimo zero.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>Capítulo 05 &middot; Plano de contingência</span><span>07 / 26</span></div>
+  </div>
+</div>
+<div class="deck" id="slide-8">
+  <button class="dl-btn" onclick="baixar('slide-8','08-codigo-legado')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body">
+      <p class="eyebrow"><i data-lucide="terminal" class="icon"></i>Capítulo 06</p>
+      <div style="display:flex; align-items:baseline; gap:10px;">
+        <h1 class="h-title" style="font-size:17px;">O passo 1 do plano: ler isto, por inteiro</h1>
+        <span class="tag tag-file">legacy/gilded_rose.py, linhas 8–36</span>
+      </div>
+      <div class="code-wrap dense" style="margin-top:9px;"><pre><code class="language-python">def update_quality(self):
     for item in self.items:
-        if item.name != "Aged Brie" and item.name != "Backstage passes...":
-            if item.quality &gt; 0:
+        if item.name != "Aged Brie" and item.name != "Backstage passes to a TAFKAL80ETC concert":
+            if item.quality > 0:
                 if item.name != "Sulfuras, Hand of Ragnaros":
                     item.quality = item.quality - 1
         else:
-            if item.quality &lt; 50:
+            if item.quality < 50:
                 item.quality = item.quality + 1
-                if item.name == "Backstage passes...":
-                    if item.sell_in &lt; 11:
-                        if item.quality &lt; 50:
+                if item.name == "Backstage passes to a TAFKAL80ETC concert":
+                    if item.sell_in < 11:
+                        if item.quality < 50:
                             item.quality = item.quality + 1
-                    if item.sell_in &lt; 6:
-                        if item.quality &lt; 50:
+                    if item.sell_in < 6:
+                        if item.quality < 50:
                             item.quality = item.quality + 1
         if item.name != "Sulfuras, Hand of Ragnaros":
             item.sell_in = item.sell_in - 1
-        if item.sell_in &lt; 0:
+        if item.sell_in < 0:
             if item.name != "Aged Brie":
-                if item.name != "Backstage passes...":
-                    if item.quality &gt; 0:
+                if item.name != "Backstage passes to a TAFKAL80ETC concert":
+                    if item.quality > 0:
                         if item.name != "Sulfuras, Hand of Ragnaros":
                             item.quality = item.quality - 1
                 else:
                     item.quality = item.quality - item.quality
             else:
-                if item.quality &lt; 50:
-                    item.quality = item.quality + 1
-</div>
-    <p class="mt-3 text-sm text-gray-600">29 linhas, 4 níveis de aninhamento, 4 tipos de item decididos no mesmo bloco. Nenhuma regra para o Conjurado.</p>
-  </div>
-  <div class="slide-number">5</div>
-</div>
-
-<!-- 6: CODIGO NOVO: ESTRATEGIAS -->
-<div class="slide" id="slide-6">
-  <button class="dl-btn bg-gray-900 text-white text-xs px-3 py-1 rounded" onclick="baixar('slide-6','06-depois-codigo')">baixar PNG</button>
-  <div class="h-full w-full flex flex-col justify-center px-16">
-    <div class="accent-bar mb-3"></div>
-    <div class="flex items-center gap-3 mb-4">
-      <h1 class="text-2xl font-bold text-gray-900">Depois: uma classe por tipo de item</h1>
-      <span class="after-tag text-xs font-sans font-semibold px-2 py-1 rounded">src/domain/item_updaters.py</span>
+                if item.quality < 50:
+                    item.quality = item.quality + 1</code></pre></div>
+      <p style="margin-top:7px; font-size:11px; color:var(--text-soft);">29 linhas. Nenhuma regra para o Conjurado. A partir daqui, cada trecho deste método vira um slide comparando antes/depois.</p>
     </div>
-    <div class="grid grid-cols-2 gap-6">
-      <div class="code-block text-[13px]">
-class NormalItemUpdater(ItemUpdater):
-    def update(self, item):
-        item.quality = max(0, item.quality - 1)
-        item.sell_in -= 1
-        if item.sell_in &lt; 0:
-            item.quality = max(0, item.quality - 1)
-
-class ConjuredItemUpdater(ItemUpdater):
-    def update(self, item):
-        item.quality = max(0, item.quality - 2)
-        item.sell_in -= 1
-        if item.sell_in &lt; 0:
-            item.quality = max(0, item.quality - 2)
+    <div class="footer"><span>Capítulo 06 &middot; O código legado</span><span>08 / 26</span></div>
+  </div>
 </div>
-      <div class="code-block text-[13px]">
-def resolve_updater(item_name):
-    if is_conjured(item_name):
-        return ConjuredItemUpdater()
-    return _UPDATERS_BY_NAME.get(
-        item_name, _DEFAULT_UPDATER
+
+<!-- ============ 07 · CAP.05 TESTES DE CARACTERIZACAO ============ -->
+<div class="deck" id="slide-9">
+  <button class="dl-btn" onclick="baixar('slide-9','09-caracterizacao')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body is-centered">
+      <p class="eyebrow"><i data-lucide="flask-conical" class="icon"></i>Capítulo 07</p>
+      <h1 class="h-title" style="font-size:22px;">Antes de mudar, uma rede de segurança</h1>
+      <div class="h-rule"></div>
+      <div style="margin-top:15px; display:grid; grid-template-columns:1fr 1fr; gap:18px;">
+        <div>
+          <span class="tag tag-before">testes originais do legado</span>
+          <div class="code-wrap" style="margin-top:7px;"><pre><code class="language-shell">test_foo FAILED
+test_gilded_rose_approvals FAILED
+
+assertEqual("fixme", items[0].name)
+AssertionError: 'fixme' != 'foo'
+
+2 failed in 0.14s</code></pre></div>
+        </div>
+        <div style="font-size:12px; color:var(--text); line-height:1.6;">
+          <p>Um teste é só um modelo de exemplo. O outro falha por falta de configuração — não por erro de lógica.</p>
+          <p style="margin-top:8px;">Cobertura real de regra de negócio: <strong>zero</strong>. Por isso a equipe escreveu <code>test_caracterizacao.py</code> contra o legado, antes de tocar em qualquer linha.</p>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>Capítulo 07 &middot; Testes de caracterização</span><span>09 / 26</span></div>
+  </div>
+</div>
+
+<!-- ============ 08 · CAP.06 REORGANIZACAO & ARQUITETURA ============ -->
+<div class="deck" id="slide-10">
+  <button class="dl-btn" onclick="baixar('slide-10','10-reorganizacao-arquitetura')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body is-centered">
+      <p class="eyebrow"><i data-lucide="folder-tree" class="icon"></i>Capítulo 08</p>
+      <h1 class="h-title" style="font-size:21px;">De um arquivo só, para uma arquitetura</h1>
+      <div class="h-rule"></div>
+      <div style="margin-top:14px; display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+        <div>
+          <span class="tag tag-before">antes</span>
+          <div class="tree" style="margin-top:6px; font-size:11px;">legacy/gilded_rose.py
+  (Item + GildedRose +
+   regra de negocio, juntos)</div>
+          <p style="margin-top:7px; font-size:11px; color:var(--text-soft);">Uma classe concentra orquestração e regra de todos os itens.</p>
+        </div>
+        <div>
+          <span class="tag tag-after">depois</span>
+          <div class="tree" style="margin-top:6px; font-size:11px;">src/domain/
+  item.py (intocado)
+  updaters/ (1 classe por regra
+            + registry.py)
+src/application/
+  gilded_rose.py (só orquestra)</div>
+          <p style="margin-top:7px; font-size:11px; color:var(--text-soft);"><code>domain</code> guarda a regra; <code>application</code> só delega via registry injetado.</p>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>Capítulo 08 &middot; Reorganização &amp; arquitetura</span><span>10 / 26</span></div>
+  </div>
+</div>
+
+<!-- ============ 09 · CAP.07 SOLID ============ -->
+<div class="deck" id="slide-11">
+  <button class="dl-btn" onclick="baixar('slide-11','11-solid')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body">
+      <p class="eyebrow"><i data-lucide="layout-grid" class="icon"></i>Capítulo 09</p>
+      <h1 class="h-title" style="font-size:22px;">Cinco letras, cinco decisões de código</h1>
+      <div class="h-rule"></div>
+      <div style="margin-top:13px; display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:11.5px;">
+        <div class="card"><span class="card-letter">S</span><p style="font-weight:700; color:var(--text); margin:6px 0 0;">Single Responsibility</p><p style="color:var(--text-soft); margin-top:2px;">Uma classe, uma regra de item.</p></div>
+        <div class="card"><span class="card-letter">O</span><p style="font-weight:700; color:var(--text); margin:6px 0 0;">Open/Closed</p><p style="color:var(--text-soft); margin-top:2px;">Item novo = classe nova + registro, zero edição.</p></div>
+        <div class="card"><span class="card-letter">L</span><p style="font-weight:700; color:var(--text); margin:6px 0 0;">Liskov Substitution</p><p style="color:var(--text-soft); margin-top:2px;">Qualquer estratégia substitui a base sem quebrar nada.</p></div>
+        <div class="card"><span class="card-letter">I</span><p style="font-weight:700; color:var(--text); margin:6px 0 0;">Interface Segregation</p><p style="color:var(--text-soft); margin-top:2px;">Um método só: update(item).</p></div>
+        <div class="card" style="grid-column:span 2;"><span class="card-letter">D</span><p style="font-weight:700; color:var(--text); margin:6px 0 0;">Dependency Inversion</p><p style="color:var(--text-soft); margin-top:2px;">GildedRose depende da abstração UpdaterRegistry, injetada no construtor — você vai ver o código exato disso já nos próximos slides.</p></div>
+      </div>
+    </div>
+    <div class="footer"><span>Capítulo 09 &middot; SOLID</span><span>11 / 26</span></div>
+  </div>
+</div>
+
+<!-- ============ 10 · CAP.08 ITEM_NAMES.PY ============ -->
+<div class="deck" id="slide-12">
+  <button class="dl-btn" onclick="baixar('slide-12','12-1')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body">
+      <p class="eyebrow"><i data-lucide="lock" class="icon"></i>Capítulo 10 &middot; código real</p>
+      <h1 class="h-title" style="font-size:21px;">A única coisa que não podia, e não mudou</h1>
+      <div style="margin-top:11px; display:grid; grid-template-columns:1fr 1fr; gap:18px;">
+        <div>
+          <span class="tag tag-before">antes &middot; legacy/gilded_rose.py, linhas 39–46</span>
+          <div class="code-wrap" style="margin-top:7px;"><pre><code class="language-python">class Item:
+    def __init__(self, name, sell_in, quality):
+        self.name = name
+        self.sell_in = sell_in
+        self.quality = quality
+
+    def __repr__(self):
+        return "%s, %s, %s" % (self.name, self.sell_in, self.quality)</code></pre></div>
+        </div>
+        <div>
+          <span class="tag tag-after">depois &middot; src/domain/item.py</span>
+          <div class="code-wrap" style="margin-top:7px;"><pre><code class="language-python"># Copia exata da classe Item do legado.
+# Restricao obrigatoria do trabalho:
+# esta classe nao pode ser alterada.
+
+class Item:
+    def __init__(self, name, sell_in, quality):
+        self.name = name
+        self.sell_in = sell_in
+        self.quality = quality
+
+    def __repr__(self):
+        return "%s, %s, %s" % (self.name, self.sell_in, self.quality)</code></pre></div>
+        </div>
+      </div>
+      <p style="margin-top:13px; font-size:12px; color:var(--text-soft);">Byte a byte, idêntica. RNF01 cumprido — e os 28 testes confirmam que continua assim.</p>
+    </div>
+    <div class="footer"><span>Capítulo 10 &middot; item.py</span><span>12 / 26</span></div>
+  </div>
+</div>
+<div class="deck" id="slide-13">
+  <button class="dl-btn" onclick="baixar('slide-13','13-item-names')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body">
+      <p class="eyebrow"><i data-lucide="file-code-2" class="icon"></i>Capítulo 11 &middot; código real</p>
+      <h1 class="h-title" style="font-size:19px;">Nome de item, repetido ou centralizado</h1>
+      <div style="margin-top:10px; display:grid; grid-template-columns:0.85fr 1.15fr; gap:16px;">
+        <div>
+          <span class="tag tag-before">antes &middot; texto repetido pelo método</span>
+          <div class="code-wrap" style="margin-top:7px;"><pre><code class="language-python"># "Aged Brie" -- linhas 10, 27
+# "Sulfuras, Hand of Ragnaros"
+#   -- linhas 12, 24, 30
+# "Backstage passes to a
+#   TAFKAL80ETC concert"
+#   -- linhas 10, 17, 28
+
+# 10 comparacoes de texto,
+# nenhuma fonte unica da verdade</code></pre></div>
+        </div>
+        <div>
+          <span class="tag tag-after">depois &middot; src/domain/item_names.py</span>
+          <div class="code-wrap" style="margin-top:7px;"><pre><code class="language-python"># -*- coding: utf-8 -*-
+"""Nomes de item centralizados.
+
+Evita repetir a mesma string literal em varios pontos do codigo (ver
+docs/diagnostico_tecnico.md, item 2).
+"""
+
+AGED_BRIE: str = "Aged Brie"
+"""Nome exato do item que ganha quality com o tempo."""
+
+SULFURAS: str = "Sulfuras, Hand of Ragnaros"
+"""Nome exato do item lendario que nunca muda de quality/sell_in."""
+
+BACKSTAGE_PASSES: str = "Backstage passes to a TAFKAL80ETC concert"
+"""Nome exato do item cujo bonus de quality depende do sell_in."""
+
+CONJURED_PREFIX: str = "Conjured"
+"""Prefixo que identifica qualquer item "Conjured *"."""
+
+
+def is_conjured(item_name: str) -> bool:
+    """Indica se um item pertence a familia de itens Conjured.
+
+    Args:
+        item_name: Nome do item, por exemplo "Conjured Mana Cake".
+
+    Returns:
+        True se o nome comecar com CONJURED_PREFIX.
+    """
+    return item_name.startswith(CONJURED_PREFIX)</code></pre></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>Capítulo 11 &middot; item_names.py</span><span>13 / 26</span></div>
+  </div>
+</div>
+
+<!-- ============ 11 · CAP.09 BASE.PY + NORMAL.PY ============ -->
+<div class="deck" id="slide-14">
+  <button class="dl-btn" onclick="baixar('slide-14','14-base-normal')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body">
+      <p class="eyebrow"><i data-lucide="file-code-2" class="icon"></i>Capítulo 12 &middot; código real</p>
+      <h1 class="h-title" style="font-size:18px;">Sem interface comum, ou com uma estratégia</h1>
+      <div style="margin-top:9px; display:grid; grid-template-columns:0.8fr 1fr 1fr; gap:13px;">
+        <div>
+          <span class="tag tag-before">antes &middot; item comum</span>
+          <div class="code-wrap" style="margin-top:6px;"><pre><code class="language-python"># trecho condensado das
+# linhas 10-13 e 24-31
+if item.quality > 0:
+    if item.name != "Sulfuras...":
+        item.quality -= 1
+...
+item.sell_in -= 1
+if item.sell_in < 0:
+    if item.quality > 0:
+        item.quality -= 1</code></pre></div>
+        </div>
+        <div>
+          <span class="tag tag-after">depois &middot; updaters/base.py</span>
+          <div class="code-wrap" style="margin-top:6px;"><pre><code class="language-python">class ItemUpdater:
+    """Estrategia de atualizacao
+    diaria de um Item.
+    """
+
+    def update(self, item: Item) -> None:
+        """Aplica a passagem de um
+        dia em um item.
+
+        Args:
+            item: Item a atualizar.
+
+        Raises:
+            NotImplementedError
+        """
+        raise NotImplementedError</code></pre></div>
+        </div>
+        <div>
+          <span class="tag tag-after">depois &middot; updaters/normal.py</span>
+          <div class="code-wrap" style="margin-top:6px;"><pre><code class="language-python">class NormalItemUpdater(ItemUpdater):
+    """Item generico.
+
+    Perde 1/dia, o dobro apos o
+    vencimento. Nunca negativa.
+    """
+
+    def update(self, item: Item) -> None:
+        """Atualiza um item comum.
+
+        Args:
+            item: Item a atualizar.
+        """
+        item.quality = max(
+            MIN_QUALITY, item.quality - 1
+        )
+        item.sell_in -= 1
+        if item.sell_in < 0:
+            item.quality = max(
+                MIN_QUALITY, item.quality - 1
+            )</code></pre></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>Capítulo 12 &middot; base.py &amp; normal.py</span><span>14 / 26</span></div>
+  </div>
+</div>
+
+<!-- ============ 12 · CAP.10 AGED_BRIE.PY + SULFURAS.PY ============ -->
+<div class="deck" id="slide-15">
+  <button class="dl-btn" onclick="baixar('slide-15','15-agedbrie-sulfuras')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body">
+      <p class="eyebrow"><i data-lucide="file-code-2" class="icon"></i>Capítulo 13 &middot; código real</p>
+      <h1 class="h-title" style="font-size:19px;">Dois itens especiais, isolados</h1>
+      <div style="margin-top:9px; display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+        <div>
+          <span class="tag tag-before">antes &middot; Aged Brie, linhas 14-16 e 34-36</span>
+          <div class="code-wrap" style="margin-top:6px;"><pre><code class="language-python">if item.quality < 50:
+    item.quality = item.quality + 1
+# ... e de novo apos o vencimento
+if item.quality < 50:
+    item.quality = item.quality + 1</code></pre></div>
+        </div>
+        <div>
+          <span class="tag tag-after">depois &middot; updaters/aged_brie.py</span>
+          <div class="code-wrap" style="margin-top:6px;"><pre><code class="language-python">class AgedBrieUpdater(ItemUpdater):
+    """Aged Brie. Ganha 1/dia, o
+    dobro apos o vencimento.
+    """
+    def update(self, item: Item) -> None:
+        item.quality = min(
+            MAX_QUALITY, item.quality + 1
+        )
+        item.sell_in -= 1
+        if item.sell_in < 0:
+            item.quality = min(
+                MAX_QUALITY, item.quality + 1
+            )</code></pre></div>
+        </div>
+        <div>
+          <span class="tag tag-before">antes &middot; Sulfuras, 3 guardas (linhas 12, 24, 30)</span>
+          <div class="code-wrap" style="margin-top:6px;"><pre><code class="language-python">if item.name != "Sulfuras, Hand of Ragnaros":
+    ...  # repetido 3x no método</code></pre></div>
+        </div>
+        <div>
+          <span class="tag tag-after">depois &middot; updaters/sulfuras.py</span>
+          <div class="code-wrap" style="margin-top:6px;"><pre><code class="language-python">class SulfurasUpdater(ItemUpdater):
+    """Item legendario: nunca
+    vendido, nunca perde quality.
+    """
+    def update(self, item: Item) -> None:
+        """No-op: Sulfuras nunca muda."""
+        pass</code></pre></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>Capítulo 13 &middot; aged_brie.py &amp; sulfuras.py</span><span>15 / 26</span></div>
+  </div>
+</div>
+
+<!-- ============ 13 · CAP.11 BACKSTAGE_PASSES.PY ============ -->
+<div class="deck" id="slide-16">
+  <button class="dl-btn" onclick="baixar('slide-16','16-backstage')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body">
+      <p class="eyebrow"><i data-lucide="file-code-2" class="icon"></i>Capítulo 14 &middot; código real</p>
+      <h1 class="h-title" style="font-size:19px;">A regra mais complexa, isolada num arquivo</h1>
+      <div style="margin-top:10px; display:grid; grid-template-columns:0.9fr 1.1fr; gap:16px;">
+        <div>
+          <span class="tag tag-before">antes &middot; linhas 17-23 e 32-33</span>
+          <div class="code-wrap" style="margin-top:7px;"><pre><code class="language-python">if item.name == "Backstage passes...":
+    if item.sell_in < 11:
+        if item.quality < 50:
+            item.quality = item.quality + 1
+    if item.sell_in < 6:
+        if item.quality < 50:
+            item.quality = item.quality + 1
+# ... e no dia do evento:
+item.quality = item.quality - item.quality</code></pre></div>
+        </div>
+        <div>
+          <span class="tag tag-after">depois &middot; updaters/backstage_passes.py</span>
+          <div class="code-wrap" style="margin-top:7px;"><pre><code class="language-python">class BackstagePassesUpdater(ItemUpdater):
+    """Backstage passes.
+
+    Quality sobe conforme o show se aproxima
+    e despenca a zero apos o show acontecer.
+
+    Regras de incremento por dia:
+        * +1 sempre.
+        * +1 extra quando sell_in < 11.
+        * +1 extra quando sell_in < 6.
+    """
+
+    def update(self, item: Item) -> None:
+        item.quality = min(MAX_QUALITY, item.quality + 1)
+        if item.sell_in < 11:
+            item.quality = min(MAX_QUALITY, item.quality + 1)
+        if item.sell_in < 6:
+            item.quality = min(MAX_QUALITY, item.quality + 1)
+        item.sell_in -= 1
+        if item.sell_in < 0:
+            item.quality = 0</code></pre></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>Capítulo 14 &middot; backstage_passes.py</span><span>16 / 26</span></div>
+  </div>
+</div>
+
+<!-- ============ 14 · CAP.12 CONJURED.PY ============ -->
+<div class="deck" id="slide-17">
+  <button class="dl-btn" onclick="baixar('slide-17','17-conjured-codigo')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body">
+      <p class="eyebrow"><i data-lucide="sparkles" class="icon"></i>Capítulo 15 &middot; código real &middot; RF11</p>
+      <h1 class="h-title" style="font-size:20px;">A regra que não existia, agora existe</h1>
+      <div style="margin-top:11px; display:grid; grid-template-columns:0.85fr 1.15fr; gap:16px;">
+        <div>
+          <span class="tag tag-before">antes &middot; nenhuma linha dedicada</span>
+          <div class="code-wrap" style="margin-top:7px;"><pre><code class="language-python"># "Conjured Mana Cake" cai no
+# branch generico (linha 10):
+#   nem Aged Brie, nem Backstage
+#   => trata como item comum
+#   => perde 1/dia, nao 2/dia
+
+# bug confirmado em
+# execucao_legado_antes.txt</code></pre></div>
+        </div>
+        <div>
+          <span class="tag tag-after">depois &middot; updaters/conjured.py</span>
+          <div class="code-wrap" style="margin-top:7px;"><pre><code class="language-python">class ConjuredItemUpdater(ItemUpdater):
+    """Item Conjured.
+
+    Degrada 2x mais rapido que um item comum:
+    perde 2 de quality por dia, e o dobro (4)
+    apos o vencimento. Quality nunca fica
+    negativa.
+
+    Corrige o bug do legado, que tratava
+    Conjured como item comum.
+    """
+
+    def update(self, item: Item) -> None:
+        """Atualiza um item Conjured.
+
+        Args:
+            item: Item Conjured a atualizar.
+        """
+        item.quality = max(MIN_QUALITY, item.quality - 2)
+        item.sell_in -= 1
+        if item.sell_in < 0:
+            item.quality = max(MIN_QUALITY, item.quality - 2)</code></pre></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>Capítulo 15 &middot; conjured.py</span><span>17 / 26</span></div>
+  </div>
+</div>
+
+<!-- ============ 15 · CAP.13 REGISTRY.PY (1/2) ============ -->
+<div class="deck" id="slide-18">
+  <button class="dl-btn" onclick="baixar('slide-18','18-registry-1')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body">
+      <p class="eyebrow"><i data-lucide="plug" class="icon"></i>Capítulo 16 &middot; código real (1/2)</p>
+      <h1 class="h-title" style="font-size:19px;">Comparar texto repetidas vezes, ou registrar uma vez</h1>
+      <div style="margin-top:9px; display:grid; grid-template-columns:0.7fr 1.3fr; gap:16px;">
+        <div>
+          <span class="tag tag-before">antes &middot; 10 comparações de nome no método</span>
+          <div class="code-wrap" style="margin-top:7px;"><pre><code class="language-python"># "Sulfuras..." comparado 4x
+# "Aged Brie" comparado 3x
+# "Backstage..." comparado 3x
+#
+# cada novo item = mais um
+# "if item.name == ..." espalhado
+# pelo metodo inteiro</code></pre></div>
+        </div>
+        <div>
+          <span class="tag tag-after">depois &middot; updaters/registry.py</span>
+          <div class="code-wrap dense" style="margin-top:7px;"><pre><code class="language-python">class UpdaterRegistry:
+    """Mapeia nome de item para ItemUpdater.
+
+    A resolucao tem fallback para correspondencia
+    por predicado e, por fim, para um updater default.
+    """
+
+    def __init__(self, default_updater: ItemUpdater) -> None:
+        """Inicializa um registry vazio com um updater default.
+
+        Args:
+            default_updater: Estrategia usada quando nenhum
+                nome ou predicado registrado corresponde ao item.
+        """
+        self._default_updater: ItemUpdater = default_updater
+        self._updaters_by_name: Dict[str, ItemUpdater] = {}
+        self._predicate_updaters: List[Tuple[NamePredicate, ItemUpdater]] = []
+
+    def register(self, item_name: str, updater: ItemUpdater) -> "UpdaterRegistry":
+        """Associa um nome exato de item a um updater.
+
+        Args:
+            item_name: Nome exato do item (ex. "Aged Brie").
+            updater: Estrategia a ser usada para esse item.
+
+        Returns:
+            A propria instancia, para permitir encadeamento.
+        """
+        self._updaters_by_name[item_name] = updater
+        return self</code></pre></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>Capítulo 16 &middot; registry.py (1/2)</span><span>18 / 26</span></div>
+  </div>
+</div>
+
+<!-- ============ 16 · CAP.14 REGISTRY.PY (2/2) ============ -->
+<div class="deck" id="slide-19">
+  <button class="dl-btn" onclick="baixar('slide-19','19-registry-2')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body">
+      <p class="eyebrow"><i data-lucide="plug" class="icon"></i>Capítulo 17 &middot; código real (2/2)</p>
+      <h1 class="h-title" style="font-size:19px;">Como o registry resolve a estratégia certa</h1>
+      <span class="tag tag-after">depois &middot; updaters/registry.py (continuação)</span>
+      <div style="margin-top:9px; display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <div class="code-wrap"><pre><code class="language-python">def resolve(self, item_name: str) -> ItemUpdater:
+    """Resolve a estrategia adequada
+    para um nome de item.
+
+    Args:
+        item_name: Nome do item a resolver.
+
+    Returns:
+        O ItemUpdater correspondente,
+        ou o updater default.
+    """
+    if item_name in self._updaters_by_name:
+        return self._updaters_by_name[item_name]
+    for predicate, updater in self._predicate_updaters:
+        if predicate(item_name):
+            return updater
+    return self._default_updater</code></pre></div>
+        <div class="code-wrap"><pre><code class="language-python">def build_default_registry() -> UpdaterRegistry:
+    """Constroi o registry padrao da aplicacao.
+
+    Returns:
+        Registry pronto para uso, podendo ser
+        estendido antes de injetar em GildedRose.
+    """
+    registry = UpdaterRegistry(
+        default_updater=NormalItemUpdater()
     )
-
-# classes existentes:
-# NormalItemUpdater
-# AgedBrieUpdater
-# SulfurasUpdater
-# BackstagePassesUpdater
-# ConjuredItemUpdater
-</div>
-    </div>
-    <p class="mt-5 text-base text-gray-600">Cada regra cabe em poucas linhas, sem aninhamento, e pode ser testada sozinha.</p>
-  </div>
-  <div class="slide-number">6</div>
-</div>
-
-<!-- 7: ARQUITETURA -->
-<div class="slide" id="slide-7">
-  <button class="dl-btn bg-gray-900 text-white text-xs px-3 py-1 rounded" onclick="baixar('slide-7','07-arquitetura')">baixar PNG</button>
-  <div class="h-full w-full flex flex-col justify-center px-20">
-    <div class="accent-bar mb-6"></div>
-    <h1 class="text-3xl font-bold text-gray-900 mb-10">Arquitetura: antes e depois</h1>
-    <div class="grid grid-cols-2 gap-10 text-base">
-      <div>
-        <span class="before-tag text-xs font-sans font-semibold px-2 py-1 rounded">antes</span>
-        <p class="mt-3 text-gray-700">Uma única classe (<code>GildedRose</code>) concentra a orquestração e a regra de negócio de todos os tipos de item ao mesmo tempo.</p>
-      </div>
-      <div>
-        <span class="after-tag text-xs font-sans font-semibold px-2 py-1 rounded">depois</span>
-        <p class="mt-3 text-gray-700"><code>domain</code> guarda o Item (intocado) e uma estratégia por tipo de item. <code>application</code> só orquestra: identifica o tipo e delega ao domínio.</p>
+    registry.register(AGED_BRIE, AgedBrieUpdater())
+    registry.register(SULFURAS, SulfurasUpdater())
+    registry.register(
+        BACKSTAGE_PASSES, BackstagePassesUpdater()
+    )
+    registry.register_by_predicate(
+        is_conjured, ConjuredItemUpdater()
+    )
+    return registry</code></pre></div>
       </div>
     </div>
-    <p class="mt-12 text-lg text-gray-600">Clean Architecture simples: separa a regra de negócio da orquestração, sem alterar Item nem items.</p>
+    <div class="footer"><span>Capítulo 17 &middot; registry.py (2/2)</span><span>19 / 26</span></div>
   </div>
-  <div class="slide-number">7</div>
 </div>
 
-<!-- 8: ANTES x DEPOIS COMPORTAMENTO -->
-<div class="slide" id="slide-8">
-  <button class="dl-btn bg-gray-900 text-white text-xs px-3 py-1 rounded" onclick="baixar('slide-8','08-antes-depois-comportamento')">baixar PNG</button>
-  <div class="h-full w-full flex flex-col justify-center px-20">
-    <div class="accent-bar mb-6"></div>
-    <h1 class="text-3xl font-bold text-gray-900 mb-8">Comportamento preservado: 30 dias de simulação</h1>
-    <div class="grid grid-cols-2 gap-8">
-      <div>
-        <span class="before-tag text-xs font-sans font-semibold px-2 py-1 rounded">antes</span>
-        <div class="code-block mt-3 text-sm">
-Conjured Mana Cake, 2, 5
+<!-- ============ 17 · CAP.15 GILDED_ROSE.PY ============ -->
+<div class="deck" id="slide-20">
+  <button class="dl-btn" onclick="baixar('slide-20','20-gilded-rose')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body">
+      <p class="eyebrow"><i data-lucide="layers" class="icon"></i>Capítulo 18 &middot; código real</p>
+      <h1 class="h-title" style="font-size:19px;">O orquestrador: de 28 linhas de regra, para 2</h1>
+      <div style="margin-top:9px; display:grid; grid-template-columns:0.8fr 1.2fr; gap:16px;">
+        <div>
+          <span class="tag tag-before">antes &middot; legacy/gilded_rose.py, linhas 3-9</span>
+          <div class="code-wrap" style="margin-top:7px;"><pre><code class="language-python">class GildedRose(object):
+
+    def __init__(self, items):
+        self.items = items
+
+    def update_quality(self):
+        for item in self.items:
+            # ... 28 linhas de regra
+            # de negocio aqui dentro</code></pre></div>
+        </div>
+        <div>
+          <span class="tag tag-after">depois &middot; application/gilded_rose.py</span>
+          <div class="code-wrap dense" style="margin-top:7px;"><pre><code class="language-python">class GildedRose(object):
+    """Inventario da loja.
+
+    Depende apenas da abstracao UpdaterRegistry
+    (DIP) -- nunca decide a regra de nenhum item.
+    """
+
+    def __init__(
+        self,
+        items: List[Item],
+        updater_registry: Optional[UpdaterRegistry] = None,
+    ) -> None:
+        """Inicializa o inventario.
+
+        Args:
+            items: Itens do inventario.
+            updater_registry: Registry de estrategias.
+                Se None, usa o registry default.
+        """
+        self.items: List[Item] = items
+        self._updater_registry = (
+            updater_registry or build_default_registry()
+        )
+
+    def update_quality(self) -> None:
+        """Avanca um dia para todos os itens."""
+        for item in self.items:
+            updater = self._updater_registry.resolve(item.name)
+            updater.update(item)</code></pre></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>Capítulo 18 &middot; gilded_rose.py</span><span>20 / 26</span></div>
+  </div>
+</div>
+
+<!-- ============ 18 · CAP.16 CONJURED COMPORTAMENTO ============ -->
+<div class="deck" id="slide-21">
+  <button class="dl-btn" onclick="baixar('slide-21','21-2')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body">
+      <p class="eyebrow"><i data-lucide="flask-conical" class="icon"></i>Capítulo 19 &middot; código real</p>
+      <h1 class="h-title" style="font-size:19px;">A prova de que OCP e DIP funcionam, em teste real</h1>
+      <span class="tag tag-after">tests/test_gilded_rose_di.py &middot; nenhum arquivo de produção é alterado</span>
+      <div class="code-wrap" style="margin-top:8px;"><pre><code class="language-python">class DoublesQualityUpdater(ItemUpdater):
+    def update(self, item):
+        item.quality *= 2
+        item.sell_in -= 1
+
+
+def test_gilded_rose_aceita_registry_customizado_via_injecao():
+    custom_registry = build_default_registry()
+    custom_registry.register("Item Especial", DoublesQualityUpdater())
+
+    items = [Item("Item Especial", sell_in=5, quality=10)]
+    GildedRose(items, updater_registry=custom_registry).update_quality()
+
+    assert (items[0].sell_in, items[0].quality) == (4, 20)</code></pre></div>
+      <p style="margin-top:10px; font-size:12px; color:var(--text-soft);">Uma regra nova nasce dentro do teste, é registrada no registry injetado, e <code>GildedRose</code> nunca percebe a diferença — extensão de fora, sem editar produção.</p>
+    </div>
+    <div class="footer"><span>Capítulo 19 &middot; test_gilded_rose_di.py</span><span>21 / 26</span></div>
+  </div>
+</div>
+<div class="deck" id="slide-22">
+  <button class="dl-btn" onclick="baixar('slide-22','22-conjured-comportamento')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body is-centered">
+      <p class="eyebrow"><i data-lucide="sparkles" class="icon"></i>Capítulo 20</p>
+      <h1 class="h-title" style="font-size:23px;">O código mudou. Veja o efeito real, dia a dia</h1>
+      <div class="h-rule"></div>
+      <div style="margin-top:16px; display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <div><span class="tag tag-before">antes &middot; execução do legado</span><div class="code-wrap" style="margin-top:7px;"><pre><code class="language-text">Conjured Mana Cake, 2, 5
 Conjured Mana Cake, 1, 4
 Conjured Mana Cake, 0, 3
-Conjured Mana Cake, -1, 1
-        </div>
-      </div>
-      <div>
-        <span class="after-tag text-xs font-sans font-semibold px-2 py-1 rounded">depois</span>
-        <div class="code-block mt-3 text-sm">
-Conjured Mana Cake, 2, 4
+Conjured Mana Cake, -1, 1</code></pre></div></div>
+        <div><span class="tag tag-after">depois &middot; execução refatorada</span><div class="code-wrap" style="margin-top:7px;"><pre><code class="language-text">Conjured Mana Cake, 2, 4
 Conjured Mana Cake, 1, 2
 Conjured Mana Cake, 0, 0
-Conjured Mana Cake, -1, 0
+Conjured Mana Cake, -1, 0</code></pre></div></div>
+      </div>
+      <p style="margin-top:14px; font-size:12.5px; color:var(--text-soft);">30 dias simulados: única diferença é o Conjured, agora degradando 2x mais rápido. Todo o resto do estoque, idêntico.</p>
+    </div>
+    <div class="footer"><span>Capítulo 20 &middot; Conjured: o resultado</span><span>22 / 26</span></div>
+  </div>
+</div>
+
+<!-- ============ 19 · CAP.17 TESTES & EVIDENCIAS ============ -->
+<div class="deck" id="slide-23">
+  <button class="dl-btn" onclick="baixar('slide-23','23-testes-evidencias')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body is-centered">
+      <p class="eyebrow"><i data-lucide="check-circle-2" class="icon"></i>Capítulo 21</p>
+      <h1 class="h-title" style="font-size:23px;">A prova: 28 testes, 100%, 4 linhas de diff</h1>
+      <div class="h-rule"></div>
+      <div style="margin-top:16px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:18px; text-align:center;">
+        <div><p class="stat" style="font-size:34px;">28</p><p style="color:var(--text-soft); font-size:11.5px;">testes passando</p></div>
+        <div><p class="stat" style="font-size:34px;">100%</p><p style="color:var(--text-soft); font-size:11.5px;">cobertura de src/</p></div>
+        <div><p class="stat" style="font-size:34px;">0%</p><p style="color:var(--text-soft); font-size:11.5px;">cobertura real no legado</p></div>
+      </div>
+      <div class="code-wrap" style="margin-top:16px;"><pre><code class="language-diff">24c24
+&lt; Conjured Mana Cake, 2, 5
+---
+&gt; Conjured Mana Cake, 2, 4
+36c36 / 48c48 / 60c60  (mesmo padrão — só o Conjured muda, 4 linhas em 270)</code></pre></div>
+    </div>
+    <div class="footer"><span>Capítulo 21 &middot; Testes &amp; evidências</span><span>23 / 26</span></div>
+  </div>
+</div>
+
+<!-- ============ 20 · CAP.18 ENTREGA COMPLETA ============ -->
+<div class="deck" id="slide-24">
+  <button class="dl-btn" onclick="baixar('slide-24','24-entrega')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body is-centered">
+      <p class="eyebrow"><i data-lucide="package" class="icon"></i>Capítulo 22</p>
+      <h1 class="h-title" style="font-size:23px;">Tudo o que o enunciado pediu</h1>
+      <div class="h-rule"></div>
+      <div style="margin-top:15px; display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+        <div class="checklist">
+          <div class="checkitem"><i data-lucide="check-circle-2" class="icon"></i>Diagnóstico técnico</div>
+          <div class="checkitem"><i data-lucide="check-circle-2" class="icon"></i>Requisitos (RF01–13, RNF01–07)</div>
+          <div class="checkitem"><i data-lucide="check-circle-2" class="icon"></i>Plano de contingência</div>
+          <div class="checkitem"><i data-lucide="check-circle-2" class="icon"></i>Código refatorado (SOLID + Strategy + DI)</div>
+        </div>
+        <div class="checklist">
+          <div class="checkitem"><i data-lucide="check-circle-2" class="icon"></i>Conjured implementado (RF11)</div>
+          <div class="checkitem"><i data-lucide="check-circle-2" class="icon"></i>28 testes automatizados, 100% de cobertura</div>
+          <div class="checkitem"><i data-lucide="check-circle-2" class="icon"></i>Evidências antes/depois</div>
+          <div class="checkitem"><i data-lucide="check-circle-2" class="icon"></i>README + esta apresentação</div>
         </div>
       </div>
+      <p style="margin-top:15px; font-size:11px; color:var(--text-faint);">Item e items intocados do início ao fim — zero penalidade de restrição.</p>
     </div>
-    <p class="mt-8 text-lg text-gray-600">Única diferença na simulação completa de 30 dias: o item Conjurado, que tinha um comportamento incorreto e foi corrigido. Todos os outros itens produziram exatamente a mesma saída.</p>
+    <div class="footer"><span>Capítulo 22 &middot; Entrega completa</span><span>24 / 26</span></div>
   </div>
-  <div class="slide-number">8</div>
 </div>
 
-<!-- 9: TESTES E COBERTURA -->
-<div class="slide" id="slide-9">
-  <button class="dl-btn bg-gray-900 text-white text-xs px-3 py-1 rounded" onclick="baixar('slide-9','09-testes')">baixar PNG</button>
-  <div class="h-full w-full flex flex-col justify-center px-24">
-    <div class="accent-bar mb-6"></div>
-    <h1 class="text-4xl font-bold text-gray-900 mb-10">Testes automatizados</h1>
-    <div class="grid grid-cols-3 gap-8 text-center font-sans">
-      <div>
-        <p class="text-5xl font-bold text-gray-900">24</p>
-        <p class="text-gray-500 mt-2">testes passando</p>
-      </div>
-      <div>
-        <p class="text-5xl font-bold text-gray-900">97%</p>
-        <p class="text-gray-500 mt-2">cobertura de domínio</p>
-      </div>
-      <div>
-        <p class="text-5xl font-bold text-gray-900">0%</p>
-        <p class="text-gray-500 mt-2">cobertura real no legado</p>
-      </div>
+<!-- ============ 21 · CAP.19 LICOES ============ -->
+<div class="deck" id="slide-25">
+  <button class="dl-btn" onclick="baixar('slide-25','25-licoes')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body is-centered">
+      <p class="eyebrow"><i data-lucide="lightbulb" class="icon"></i>Capítulo 23</p>
+      <h1 class="h-title" style="font-size:25px;">Lições aprendidas</h1>
+      <div class="h-rule"></div>
+      <ul style="margin-top:17px; font-size:14px; color:var(--text); line-height:1.7; list-style:none; padding:0;">
+        <li>Ler o código não basta — é preciso executar para confirmar o comportamento real.</li>
+        <li>Caracterização documenta o legado; não substitui entender a regra de negócio.</li>
+        <li>Passos pequenos custam tempo, mas evitam que uma mudança grande esconda uma regressão.</li>
+        <li>OCP e DIP só ficam completos quando a extensão é injetada de fora, não fixada no módulo.</li>
+      </ul>
     </div>
-    <p class="mt-12 text-lg text-gray-600">Caracterização do comportamento atual antes de qualquer mudança estrutural, mais testes unitários isolados por estratégia.</p>
+    <div class="footer"><span>Capítulo 23 &middot; Lições aprendidas</span><span>25 / 26</span></div>
   </div>
-  <div class="slide-number">9</div>
 </div>
 
-<!-- 10: PROCESSO / BRANCHES -->
-<div class="slide" id="slide-10">
-  <button class="dl-btn bg-gray-900 text-white text-xs px-3 py-1 rounded" onclick="baixar('slide-10','10-processo')">baixar PNG</button>
-  <div class="h-full w-full flex flex-col justify-center px-24">
-    <div class="accent-bar mb-6"></div>
-    <h1 class="text-4xl font-bold text-gray-900 mb-10">Como o processo foi conduzido</h1>
-    <ol class="text-lg text-gray-700 space-y-3 list-decimal pl-6">
-      <li>Diagnóstico do código legado, com testes ainda ausentes.</li>
-      <li>Documentação de requisitos e plano de contingência.</li>
-      <li>Testes de caracterização antes de qualquer mudança.</li>
-      <li>Refatoração incremental, sempre com os testes passando.</li>
-      <li>Implementação da regra dos itens Conjurados.</li>
-      <li>Evidências finais e comparação antes e depois.</li>
-    </ol>
+<!-- ============ 22 · CAP.20 CONCLUSAO ============ -->
+<div class="deck" id="slide-26">
+  <button class="dl-btn" onclick="baixar('slide-26','26-conclusao')">baixar PNG</button>
+  <div class="content">
+    <img src="assets/logo.png" class="brand" alt="SENAI CIMATEC">
+    <div class="body is-centered" style="align-items:center; text-align:center;">
+      <p class="eyebrow" style="justify-content:center;"><i data-lucide="flag" class="icon"></i>Capítulo 24</p>
+      <h1 class="h-title hero" style="font-size:30px;">Resultado</h1>
+      <div class="h-rule" style="margin-left:auto; margin-right:auto;"></div>
+      <p style="max-width:600px; margin-top:16px; font-size:14.5px; color:var(--text); line-height:1.6;">
+        Comportamento preservado, Conjured corrigido e validado, arquitetura SOLID com Strategy + injeção de dependência — pronta para a próxima categoria de item.
+      </p>
+      <p style="margin-top:26px; font-size:12.5px; color:var(--text-faint); font-family:'JetBrains Mono',monospace;">Obrigado.</p>
+    </div>
+    <div class="footer"><span>Capítulo 24 &middot; Resultado</span><span>26 / 26</span></div>
   </div>
-  <div class="slide-number">10</div>
-</div>
-
-<!-- 11: LICOES APRENDIDAS -->
-<div class="slide" id="slide-11">
-  <button class="dl-btn bg-gray-900 text-white text-xs px-3 py-1 rounded" onclick="baixar('slide-11','11-licoes')">baixar PNG</button>
-  <div class="h-full w-full flex flex-col justify-center px-24">
-    <div class="accent-bar mb-6"></div>
-    <h1 class="text-4xl font-bold text-gray-900 mb-10">Lições aprendidas</h1>
-    <ul class="text-xl text-gray-700 space-y-5 leading-relaxed">
-      <li>Ler o código não basta. Foi necessário executar o sistema para confirmar o comportamento real antes de mudar qualquer coisa.</li>
-      <li>Testes de caracterização não substituem entender a regra de negócio, eles só documentam o que já existe.</li>
-      <li>Refatorar em passos pequenos custa mais tempo, mas elimina o risco de uma mudança grande esconder uma regressão.</li>
-    </ul>
-  </div>
-  <div class="slide-number">11</div>
-</div>
-
-<!-- 12: CONCLUSAO -->
-<div class="slide" id="slide-12">
-  <button class="dl-btn bg-gray-900 text-white text-xs px-3 py-1 rounded" onclick="baixar('slide-12','12-conclusao')">baixar PNG</button>
-  <div class="h-full w-full flex flex-col justify-center items-center px-24 text-center">
-    <div class="accent-bar mb-6"></div>
-    <h1 class="text-4xl font-bold text-gray-900 mb-6">Resultado</h1>
-    <p class="text-xl text-gray-700 max-w-3xl leading-relaxed">
-      Sistema modernizado preservando o comportamento original, com a regra de itens Conjurados implementada e validada por testes, e uma arquitetura que facilita a inclusão de novas categorias no futuro.
-    </p>
-    <p class="mt-12 text-lg text-gray-400">Obrigado.</p>
-  </div>
-  <div class="slide-number">12</div>
 </div>
 
 <script>
@@ -387,7 +1083,7 @@ function baixar(id, nome) {
   const el = document.getElementById(id);
   const botoes = el.querySelectorAll('.dl-btn');
   botoes.forEach(b => b.style.visibility = 'hidden');
-  html2canvas(el, {scale: 2}).then(canvas => {
+  html2canvas(el, {scale: 2, backgroundColor: '#FFFFFF'}).then(canvas => {
     botoes.forEach(b => b.style.visibility = 'visible');
     const link = document.createElement('a');
     link.download = nome + '.png';
@@ -395,6 +1091,9 @@ function baixar(id, nome) {
     link.click();
   });
 }
+hljs.highlightAll();
 </script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<script>lucide.createIcons();</script>
 </body>
 </html>
