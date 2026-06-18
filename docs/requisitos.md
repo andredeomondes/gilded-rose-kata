@@ -1,33 +1,37 @@
 # Documento de Requisitos
 
-Requisitos extraídos de `docs/GildedRoseRequirements_pt-BR.md` e confirmados por execução em `docs/evidencias/execucao_legado_antes.txt`.
+Este documento organiza, em formato rastreável, as regras de negócio descritas na especificação oficial do problema (`docs/GildedRoseRequirements_pt-BR.md`) e confirmadas por execução real do sistema legado (`docs/evidencias/execucao_legado_antes.txt`).
 
 ## Requisitos Funcionais
 
-| ID | Descrição |
-|----|-----------|
-| RF01 | O sistema deve diminuir `sell_in` de todo item em 1 a cada dia, exceto itens `Sulfuras`. |
-| RF02 | Itens comuns devem perder 1 de `quality` por dia enquanto `sell_in >= 0`. |
-| RF03 | Itens comuns devem perder 2 de `quality` por dia depois que `sell_in < 0`. |
-| RF04 | `Aged Brie` deve ganhar 1 de `quality` por dia enquanto `sell_in >= 0`. |
-| RF05 | `Aged Brie` deve ganhar 2 de `quality` por dia depois que `sell_in < 0`. |
-| RF06 | `Sulfuras, Hand of Ragnaros` nunca deve ter `sell_in` ou `quality` alterados. |
-| RF07 | `Backstage passes` devem ganhar 1 de `quality` por dia quando `sell_in > 10`. |
-| RF08 | `Backstage passes` devem ganhar 2 de `quality` por dia quando `sell_in <= 10` e `sell_in > 5`. |
-| RF09 | `Backstage passes` devem ganhar 3 de `quality` por dia quando `sell_in <= 5` e `sell_in >= 0`. |
-| RF10 | `Backstage passes` devem ter `quality` zerada imediatamente após o show (`sell_in < 0`). |
-| RF11 | Itens `Conjured` devem perder `quality` 2x mais rápido que itens comuns: 2/dia enquanto `sell_in >= 0`, 4/dia depois que `sell_in < 0`. |
-| RF12 | `quality` nunca deve ser negativa, para nenhum tipo de item. |
-| RF13 | `quality` nunca deve exceder 50, exceto para `Sulfuras` (fixo em 80). |
+Os requisitos funcionais descrevem o comportamento esperado do sistema para cada tipo de item.
+
+| Código | Descrição |
+|--------|-----------|
+| RF01 | O sistema deve diminuir em 1 unidade o número de dias restantes (`sell_in`) de todo item a cada dia, com exceção dos itens da categoria Sulfuras. |
+| RF02 | Itens comuns devem perder 1 ponto de qualidade por dia enquanto a data de venda não tiver passado. |
+| RF03 | Itens comuns devem perder 2 pontos de qualidade por dia após a data de venda ter passado. |
+| RF04 | O item "Aged Brie" deve ganhar 1 ponto de qualidade por dia enquanto a data de venda não tiver passado. |
+| RF05 | O item "Aged Brie" deve ganhar 2 pontos de qualidade por dia após a data de venda ter passado. |
+| RF06 | O item "Sulfuras, Hand of Ragnaros" nunca deve ter sua qualidade ou seu número de dias restantes alterados. |
+| RF07 | Os itens "Backstage passes" devem ganhar 1 ponto de qualidade por dia quando restarem mais de 10 dias para o evento. |
+| RF08 | Os itens "Backstage passes" devem ganhar 2 pontos de qualidade por dia quando restarem entre 6 e 10 dias para o evento. |
+| RF09 | Os itens "Backstage passes" devem ganhar 3 pontos de qualidade por dia quando restarem 5 dias ou menos para o evento. |
+| RF10 | A qualidade dos itens "Backstage passes" deve ser reduzida a zero imediatamente após a data do evento. |
+| RF11 | Os itens da categoria Conjurados devem perder qualidade duas vezes mais rápido que os itens comuns: 2 pontos por dia antes do vencimento e 4 pontos por dia após o vencimento. |
+| RF12 | A qualidade de um item nunca pode ser inferior a zero, independentemente do seu tipo. |
+| RF13 | A qualidade de um item nunca pode ser superior a 50, exceto para o item Sulfuras, cuja qualidade é fixa em 80. |
 
 ## Requisitos Não Funcionais
 
-| ID | Descrição |
-|----|-----------|
-| RNF01 | A classe `Item` não pode ser alterada (restrição obrigatória do trabalho). |
-| RNF02 | A propriedade `items` da classe `GildedRose` não pode ser alterada (restrição obrigatória). |
-| RNF03 | O comportamento existente para itens já definidos (comum, Aged Brie, Sulfuras, Backstage) deve ser preservado integralmente após a refatoração — validado por testes de caracterização (`docs/evidencias/execucao_legado_antes.txt` vs. evidência pós-refatoração). |
-| RNF04 | O código deve permitir testar a regra de cada tipo de item de forma isolada (testabilidade), sem exigir execução da simulação completa. |
-| RNF05 | O código deve permitir adicionar uma nova categoria de item sem modificar a lógica de categorias existentes (manutenibilidade/extensibilidade), seguindo princípio aberto/fechado. |
-| RNF06 | O código deve eliminar identificação de tipo de item por comparação de string duplicada (legibilidade, ver `docs/diagnostico_tecnico.md` item 2). |
-| RNF07 | A solução deve seguir um padrão arquitetural reconhecido (Clean Architecture), com separação entre regra de domínio e orquestração (`GildedRose`). |
+Os requisitos não funcionais descrevem atributos de qualidade exigidos da solução, e não regras de comportamento específicas de um item.
+
+| Código | Descrição |
+|--------|-----------|
+| RNF01 | A classe `Item` não pode ser alterada, conforme restrição obrigatória estabelecida pelo enunciado do trabalho. |
+| RNF02 | A propriedade `items` da classe `GildedRose` não pode ser alterada, conforme restrição obrigatória estabelecida pelo enunciado do trabalho. |
+| RNF03 | O comportamento já existente para os itens comuns, Aged Brie, Sulfuras e Backstage Passes deve ser integralmente preservado após a refatoração, validado por meio de testes de caracterização e da comparação entre as evidências de execução anteriores e posteriores à refatoração. |
+| RNF04 | O código deve permitir que a regra de cada tipo de item seja testada de forma isolada, sem exigir a execução completa da simulação do sistema. |
+| RNF05 | O código deve permitir a inclusão de uma nova categoria de item sem exigir modificações na lógica das categorias já existentes. |
+| RNF06 | O código não deve identificar o tipo de um item por meio de comparações repetidas de texto espalhadas pela lógica de negócio. |
+| RNF07 | A solução deve seguir um padrão arquitetural reconhecido, com separação clara entre a regra de domínio e a orquestração do sistema (Clean Architecture). |
